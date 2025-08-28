@@ -1,0 +1,4 @@
+collections:
+- community.crypto #.x509_certificate
+- ansible.posix
+- community.general

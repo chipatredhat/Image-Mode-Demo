@@ -1,0 +1,6 @@
+GIT_ACCOUNTNAME: git
+GIT_GROUPNAME: git
+GIT_APP_DIRECTORY: /var/lib/gitea
+GIT_USERNAME: lab-user
+GIT_PASSWORD: redhat
+GIT_EMAIL: lab-user@example.com

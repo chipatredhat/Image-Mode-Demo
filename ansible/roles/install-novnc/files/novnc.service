@@ -1,0 +1,10 @@
+[Unit]
+Description = start noVNC service
+After=syslog.target network.target
+
+[Service]
+Type=simple
+ExecStart = /bin/novnc_proxy --listen 443 --cert /root/self.crt --key /root/self.key --vnc localhost:5901 --ssl-only
+
+[Install]
+WantedBy=multi-user.target

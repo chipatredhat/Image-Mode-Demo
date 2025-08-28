@@ -1,0 +1,4 @@
+    VNCCONFIG: ./files/vncconfig
+    VNC_USERNAME: lab-user
+    NOVNC_PASSWORD: redhat
+    USERNAME_GROUP: users

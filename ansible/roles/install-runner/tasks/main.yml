@@ -1,0 +1,83 @@
+- name: Write runner token to file
+  ansible.builtin.shell: sudo -u git /usr/local/bin/gitea actions generate-runner-token --config /etc/gitea/app.ini | sudo tee -a /var/www/html/gitea_action
+  args:
+    creates: /var/www/html/gitea_action
+
+- name: Read runner token into a variable
+  ansible.builtin.shell: cat /var/www/html/gitea_action
+  register: RUNNER_TOKEN
+
+- name: Get current runner version
+  ansible.builtin.shell: curl -s https://dl.gitea.com/act_runner/ | grep href | grep name | head -1 | cut -d '/' -f 3
+  register: RUNNER_VERSION
+
+- name: Get runner
+  ansible.builtin.get_url:
+    url: https://gitea.com/gitea/act_runner/releases/download/v{{ RUNNER_VERSION.stdout }}/act_runner-{{ RUNNER_VERSION.stdout }}-linux-amd64
+    dest: /usr/bin/act-runner
+    mode: '0770'
+    owner: root
+    group: users
+
+- name: Make /etc/runner directory
+  ansible.builtin.file:
+    path: /etc/act-runner
+    owner: root
+    group: users
+    state: directory
+    mode: 0770
+
+- name: Make runner working directories
+  ansible.builtin.file:
+    path: /home/{{ USERNAME }}/runner/{{ item }}
+    state: directory
+  loop:
+    - workdir
+    - actcache
+  become_user: "{{ USERNAME }}"
+
+- name: Copy runner config
+  ansible.builtin.copy:
+    src: files/runner.cfg
+    dest: /home/{{ USERNAME }}/runner/config.yaml
+    owner: "{{ USERNAME }}"
+    group: users
+
+- name: Copy runner config
+  ansible.builtin.copy:
+    src: files/runner.cfg
+    dest: /home/{{ USERNAME }}/runner/config.yaml
+    owner: "{{ USERNAME }}"
+    group: users
+    
+- name: Register runner
+  ansible.builtin.shell: cd ~/runner && /usr/bin/act-runner register -c ~/runner/config.yaml --no-interactive --instance http://server.example.com:3000 --token {{ RUNNER_TOKEN.stdout }}
+  become_user: "{{ USERNAME }}"
+
+- name: Copy start_runner.sh
+  ansible.builtin.copy:
+    src: files/start_runner.sh
+    dest: /home/{{ USERNAME }}/runner/start_runner.sh
+    owner: "{{ USERNAME }}"
+    group: users
+    mode: 0755
+    
+# The systemd service doesn't want to play nice, so I'll just start it via bash
+#- name: Copy runner systemd service file
+#  ansible.builtin.copy:
+#    src: files/act-runner.service
+#    dest: /etc/systemd/system/act-runner.service
+
+#- name: Start and enable the runner
+#  ansible.builtin.systemd_service:
+#    state: started
+#    daemon_reload: true
+#    name: act-runner
+#    enabled: true
+
+- name: Ensure enable-linger is set for the user
+  ansible.builtin.shell: loginctl enable-linger {{ USERNAME }}
+  
+- name: Start the runner
+  ansible.builtin.shell: /home/lab-user/runner/start_runner.sh
+

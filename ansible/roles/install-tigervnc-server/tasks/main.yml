@@ -1,0 +1,51 @@
+  - name: Install tigervnc-server
+    ansible.builtin.yum:
+      name: tigervnc-server
+
+  - name: Create tigervnc systemd service
+    ansible.builtin.command: cp /usr/lib/systemd/system/vncserver@.service /etc/systemd/system/vncserver@:1.service
+
+  - name: Add {{ VNC_USERNAME }} to vncusers
+    ansible.builtin.lineinfile:
+      path: /etc/tigervnc/vncserver.users
+      line: ":1={{ VNC_USERNAME }}"
+      create: yes
+
+  - name: Make {{ VNC_USERNAME }}/.vnc
+    ansible.builtin.file:
+      path: "/home/{{ VNC_USERNAME }}/.vnc"
+      state: directory
+    become_user: "{{ VNC_USERNAME }}"
+
+  - name: Set vnc password
+    become_user: "{{ VNC_USERNAME }}"
+    ansible.builtin.shell: printf "{{ NOVNC_PASSWORD }}\n{{ NOVNC_PASSWORD }}\n\n" | vncpasswd
+
+  - name: Create .vnc/config
+    ansible.builtin.copy:
+      src: "{{ VNCCONFIG }}"
+      dest: "/home/{{ VNC_USERNAME }}/.vnc/config"
+      owner: "{{ VNC_USERNAME }}"
+      group: "{{ USERNAME_GROUP }}"
+      mode: 0644
+
+  - name: Set gnome session for vnc
+    ansible.builtin.lineinfile:
+      path: "/home/{{ VNC_USERNAME }}/.session"
+      line: "gnome-session"
+      create: yes
+      owner: "{{ VNC_USERNAME }}"
+      group: "{{ USERNAME_GROUP }}"
+
+  - name: Start and enable vnc.service
+    ansible.builtin.systemd:
+      state: started
+      enabled: true
+      name: vncserver@:1.service
+
+  - name: Create firewall rules tiger-vnc-server
+    ansible.posix.firewalld:
+      service: vnc-server
+      state: enabled
+      permanent: true
+      immediate: true

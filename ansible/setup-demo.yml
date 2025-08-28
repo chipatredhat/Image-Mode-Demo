@@ -1,0 +1,21 @@
+---
+- name: Configure Gitea for use at demo.redhat.com
+  hosts: localhost
+  become: yes
+  gather_facts: yes
+
+#  pre_tasks:
+#  - name: Install required ansible-galaxy collection
+#    #ansible.builtin.command: "ansible-galaxy collection install community.crypto"
+#    ansible.builtin.command: "ansible-galaxy install -r roles/requirements.yml"
+#    become: no
+      
+  roles:
+    - install-vscode
+    - install-gitea
+    - {role: configure-gitea, become_user: lab-user}
+    - install-novnc
+    - install-tigervnc-server
+    - {role: git-content, become_user: lab-user}
+    - install-runner
+#    - api-simulation

@@ -1,0 +1,5 @@
+# Add api web pages
+# Add AAP?
+# I can get rid of haproxy now
+# Structure for repos created in ImageModeWorkshop/files/pipeline
+# Copy files to proper places

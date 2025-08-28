@@ -1,0 +1,32 @@
+- name: Get gitea token
+  ansible.builtin.shell: "cat /home/{{ USERNAME }}/gitea_token.txt | awk '{print $6}'"
+  register: GITEA_USER_TOKEN
+
+- name: Checkout empty repos
+  ansible.builtin.shell: |
+    cd /home/{{ USERNAME }}/git
+    curl   -X POST "http://server.example.com:3000/api/v1/user/repos"   -H "accept: application/json"   -H "Authorization: token {{ GITEA_USER_TOKEN.stdout }}"   -H "Content-Type: application/json"   -d "{\"name\": \"{{ item }}\"}" -i
+    git clone http://lab-user:{{ GITEA_USER_TOKEN.stdout }}@server.example.com:3000/lab-user/{{ item }}.git
+  loop:
+    - rhel9-soe
+    - rhel10-soe
+    - petclinic
+    
+- name: Copy git content across
+  ansible.builtin.copy:
+    src: files/git/
+    dest: "/home/{{ USERNAME }}/git/"
+    owner: "{{ USERNAME }}"
+    group: "{{ USERNAME_GROUP }}"
+
+- name: Check In updates
+  ansible.builtin.shell: |
+    cd /home/{{ USERNAME }}/git/{{ item }}
+    git add .
+    git commit -m "Ansible Commit"
+    git remote set-url origin http://{{ USERNAME }}:{{ GITEA_USER_TOKEN.stdout }}@server.example.com:3000/lab-user/{{ item }}.git
+    git push
+  loop:
+    - rhel9-soe
+    - rhel10-soe
+    - petclinic

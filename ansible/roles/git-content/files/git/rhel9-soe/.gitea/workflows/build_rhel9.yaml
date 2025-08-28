@@ -1,0 +1,29 @@
+name: Build and Push RHEL 9 SOE Image
+
+on:
+  push:
+    branches:
+      - main
+      
+jobs:
+
+  build:
+
+    runs-on: imagemode
+
+    steps:
+
+    - name: Add registry.server.com and server.example.com to /etc/hosts
+      run: echo "192.168.122.1 server.example.com registry.example.com" | sudo tee -a /etc/hosts
+
+    - name: Make directory structure
+      run: sudo mkdir -p /usr/local/share/ca-certificates/extra
+
+    - name: Get CA and install it
+      run: sudo dnf -y install http://server.example.com/example.com-root-ca-20240701-1.noarch.rpm
+
+    - name: use git to clone
+      run: git clone http://server.example.com:3000/lab-user/rhel9-soe.git
+    
+    - name: build and push image
+      run: cd rhel9-soe && podman build -f Containerfile --tag registry.example.com:5000/rhel9/rhel-bootc:latest && podman push registry.example.com:5000/rhel9/rhel-bootc:latest --tls-verify=false

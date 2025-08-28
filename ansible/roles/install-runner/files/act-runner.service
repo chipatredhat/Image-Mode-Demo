@@ -1,0 +1,16 @@
+[Unit]
+Description=Gitea Actions runner
+Documentation=https://gitea.com/gitea/act_runner
+After=docker.service
+
+[Service]
+ExecStart=/bin/act-runner daemon --config /home/lab-user/runner/config.yaml
+ExecReload=/bin/kill -s HUP $MAINPID
+WorkingDirectory=/home/lab-user/runner
+TimeoutSec=0
+RestartSec=10
+Restart=always
+User=lab-user
+
+[Install]
+WantedBy=multi-user.target

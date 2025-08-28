@@ -1,0 +1,3 @@
+NOVNC_SYSTEMD_SERVICE: ./files/novnc.service
+VNC_USERNAME: lab-user
+NOVNC_IP_ADDRESS_FILE: /home/{{ VNC_USERNAME }}/external_ip

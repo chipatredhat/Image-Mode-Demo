@@ -1,0 +1,90 @@
+  - name: Make sure the VNC_USERNAME user exists
+    ansible.builtin.user:
+      name: "{{ VNC_USERNAME }}"
+      groups: wheel
+      append: yes
+
+  - name: Ensure VNC_USERNAME has NOPASSWD sudo
+    ansible.builtin.lineinfile:
+      path: "/etc/sudoers.d/{{ VNC_USERNAME }}"
+      line: "{{ VNC_USERNAME }} ALL=(ALL)       NOPASSWD: ALL"
+      create: yes
+      owner: root
+      group: root
+
+  - name: Install epel
+    ansible.builtin.yum:
+      name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-{{ ansible_distribution_major_version }}.noarch.rpm
+      state: present
+      disable_gpg_check: true
+
+  - name: Install novnc
+    ansible.builtin.yum:
+      name: "{{ novnc_packages }}"
+    vars:
+      novnc_packages:
+      - novnc
+      - python-websockify
+      - numpy
+      - "@Server with GUI"
+
+  - name: Create a private key for the certificate signing request
+    community.crypto.openssl_privatekey:
+      path: /root/self.key
+
+  - name: Generate a certificate signing request
+    community.crypto.openssl_csr:
+      path: /root/self.csr
+      privatekey_path: /root/self.key
+      common_name: "{{ ansible_hostname }}"
+      email_address: "{{ VNC_USERNAME }}@{{ ansible_domain }}"
+      country_name: "US"
+      state_or_province_name: "North Carolina"
+      locality_name: "Raleigh"
+      organization_name: "Red Hat"
+      organizational_unit_name: "Workshop"
+
+  - name: Generate a cert in /root
+    openssl_certificate:
+      path: /root/self.crt
+      privatekey_path: /root/self.key
+      csr_path: /root/self.csr
+      provider: selfsigned
+
+  - name: Create novnc systemd service
+    ansible.builtin.copy:
+      src: "{{ NOVNC_SYSTEMD_SERVICE }}"
+      dest: /usr/lib/systemd/system/novnc.service
+      owner: root
+      group: root
+      mode: 0644
+      seuser: system_u
+      serole: object_r
+      setype: vmtools_unit_file_t
+      selevel: s0
+
+  - name: Start and enable novnc.service
+    ansible.builtin.systemd:
+      daemon_reload: true
+      state: started
+      enabled: true
+      name: novnc
+
+  - name: Create firewall rule for novnc
+    ansible.posix.firewalld:
+      service: https
+      state: enabled
+      permanent: true
+      immediate: true
+      
+  - name: Get NOVNC_IP_ADDRESS_FILE
+    ansible.builtin.command: cat {{ NOVNC_IP_ADDRESS_FILE }}
+    register: NOVNC_IP_ADDRESS
+    # Referenced as NOVNC_IP_ADDRESS_PASSWORD.stdout
+
+  - name: Write novnc URL to a file
+    copy: 
+      dest: "/home/{{ VNC_USERNAME }}/novnc_url.html"
+      content: |
+        Your desktop interface can be reached at https://{{ NOVNC_IP_ADDRESS.stdout }}/vnc.html?host={{ NOVNC_IP_ADDRESS.stdout }}&port=443
+    delegate_to: localhost

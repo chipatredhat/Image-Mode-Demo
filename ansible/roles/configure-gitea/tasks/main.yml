@@ -1,0 +1,31 @@
+  - name: Create a token for {{ GIT_ACCOUNTNAME }}
+    ansible.builtin.command: sudo -u {{ GIT_ACCOUNTNAME }} /usr/local/bin/gitea admin user generate-access-token -u {{ GIT_USERNAME }} --scopes all --config /etc/gitea/app.ini | awk '{print $6}'
+    register: USER_TOKEN
+    # referenced as USER_TOKEN.stdout
+  
+  - name: Write the token so it is accessible
+    ansible.builtin.copy:
+      content: "{{ USER_TOKEN.stdout }}"
+      dest: ~/gitea_token.txt
+
+  - name: Make git directory
+    ansible.builtin.file:
+      state: directory
+      path: ~/git
+    become: yes
+    become_user: "{{ GIT_USERNAME }}"
+
+# Fix This:
+#  - name: Clone directories
+#    ansible.builtin.command: cd ~/git && curl -X POST 'http://localhost:3000/api/v1/user/repos' -H 'accept: application/json' -H 'Authorization: token {{ USER_TOKEN.stdout }}' -H 'Content-Type: application/json' -d '{\'name\': \'{{ item }}\'}' -i && git clone http://localhost:3000/lab-user/{{ item }}.git
+#    with_items: 
+#      - "rhel9_soe"
+#      - "petclinic"
+#      - "rhel10-soe"
+
+ # - name: commit repos
+ #   ansible.builtin.command: cd ~/git/{{ item }} && git add . && git commit -m 'Initial commit' && git remote set-url origin http://${GITEA_USER_TOKEN}@localhost:3000/lab-user/{{ item }}.git && git push
+ #   with_items:
+ #     - "rhel9_soe"
+ #     - "petclinic"
+ #     - "rhel10-soe"

@@ -1,0 +1,77 @@
+  - name: Ensure group GIT_GROUPNAME exists
+    ansible.builtin.group:
+      name: "{{ GIT_GROUPNAME }}"
+      system: true
+      state: present
+
+  - name: Make sure GIT_ACCOUNTNAME exists
+    ansible.builtin.user:
+      name: "{{ GIT_ACCOUNTNAME }}"
+      group: "{{ GIT_GROUPNAME }}"
+      system: true
+      append: yes
+      comment: Git Version Control
+
+  - name: Create directories in GIT_APP_DIRECTORY
+    ansible.builtin.file:
+      state: directory
+      path: "{{ item }}"
+      owner: "{{ GIT_ACCOUNTNAME }}"
+      group: "{{ GIT_GROUPNAME }}"
+      mode: 0750
+    with_items: 
+      - "{{ GIT_APP_DIRECTORY }}/custom"
+      - "{{ GIT_APP_DIRECTORY }}/data"
+      - "{{ GIT_APP_DIRECTORY }}/log"
+
+  - name: Create /etc/gitea directory
+    ansible.builtin.file:
+      state: directory
+      path: /etc/gitea
+      owner: root
+      group: "{{ GIT_GROUPNAME }}"
+      mode: 0750
+
+  - name: Copy app.ini to /etc/gitea/app.ini
+    ansible.builtin.copy:
+      src: files/gitea.ini
+      dest: /etc/gitea/app.ini
+      owner: "{{ GIT_ACCOUNTNAME }}"
+      group: "{{ GIT_GROUPNAME }}" 
+      mode: 0640
+
+  - name: Get the current gitea Version
+    ansible.builtin.shell: "curl -Ls -o /dev/null -w '%{url_effective}' https://github.com/go-gitea/gitea/releases/latest | awk -F '/v' '{print $2}'"
+    register: GITEA_VERSION
+    changed_when: false
+    check_mode: false
+    # referenced as GITEA_VERSION.stdout
+   
+  - name: Get gitea binary
+    ansible.builtin.get_url:
+      url: https://dl.gitea.com/gitea/{{ GITEA_VERSION.stdout }}/gitea-{{ GITEA_VERSION.stdout }}-linux-amd64
+      dest: /usr/local/bin/gitea
+      owner: "{{ GIT_ACCOUNTNAME }}"
+      group: "{{ GIT_GROUPNAME }}" 
+      mode: a+x
+      setype: bin_t 
+
+  - name: Create gitea.service
+    ansible.builtin.copy:
+      src: files/gitea.service
+      dest: /etc/systemd/system/gitea.service
+
+  - name: Enable gitea service
+    ansible.builtin.systemd_service:
+      name: gitea
+      state: started
+      enabled: true
+      daemon_reload: true
+
+  - name: Give gitea 30 seconds to startup
+    ansible.builtin.wait_for:
+      timeout: 30
+    delegate_to: localhost
+
+  - name: Create admin user in gitea
+    ansible.builtin.shell: "sudo -u {{ GIT_ACCOUNTNAME }} /usr/local/bin/gitea admin user create --username {{ GIT_USERNAME }} --password {{ GIT_PASSWORD }} --email {{ GIT_EMAIL }} --must-change-password=false --config /etc/gitea/app.ini"
