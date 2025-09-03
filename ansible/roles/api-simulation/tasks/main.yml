@@ -1,0 +1,15 @@
+- name: Copy cgi-bin files
+  ansible.builtin.copy:
+    src: files/nginx/cgi-bin/
+    dest: /var/www/cgi-bin
+    mode: 0755
+
+- name: Copy php files
+  ansible.builtin.copy:
+    src: files/nginx/html/
+    dest: /var/www/html
+
+- name: Copy ansible playbooks and files
+  ansible.builtin.copy:
+    src: files/ansible
+    dest: /home/{{ USERNAME }}
