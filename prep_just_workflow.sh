@@ -17,3 +17,4 @@ cd /home/lab-user/git/petclinic
 cp -a ${CONTENTDIR}/petclinic/* .
 mkdir -p .gitea/workflows
 mv files/build_petclinic.yaml /home/lab-user/git/petclinic/.gitea/workflows/build_petclinic.yaml
+git config --global user.name "lab-user" && git config --global user.email "lab-user@example.com"
