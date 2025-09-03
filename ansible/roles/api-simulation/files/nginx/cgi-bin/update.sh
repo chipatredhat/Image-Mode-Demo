@@ -4,4 +4,5 @@
 #curl -s -k -c - -X POST --user 'admin:redhat' https://aap.acme.com/api/controller/v2/job_templates/16/launch/
 
 # This command runs a local playbook when AAP isn't available
-ansible-playbook /home/lab-user/ansible/update.yaml
+cd /home/lab-user/ansible
+sudo -u lab-user ansible-playbook update.yaml
