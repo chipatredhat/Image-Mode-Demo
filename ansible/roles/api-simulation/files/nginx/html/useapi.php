@@ -24,7 +24,7 @@
 <body>
 <center>
 <h1 style="color: red;">Automate your deployment with the Ansible API</h1>
-<h2 style="color: black;">These two buttons use the Ansible API to maintain <u>petclinic.acme.com</u></h2>
-<button class="btn green" onClick="document.location='http://web.acme.com/update.php'">Update and reboot petclinic.acme.com</button><P>
-<button class="btn green" onClick="document.location='http://web.acme.com/switch.php'">Switch to RHEL 10 and reboot petclinic.acme.com</button><P>
-<button class="btn green" onClick="document.location='http://web.acme.com/rollback.php'">Rollback and reboot petclinic.acme.com</button><P>
+<h2 style="color: black;">These two buttons use the Ansible API to maintain <u>petclinic.example.com</u></h2>
+<button class="btn green" onClick="document.location='http://server.example.com/update.php'">Update and reboot petclinic.example.com</button><P>
+<button class="btn green" onClick="document.location='http://server.example.com/switch.php'">Switch to RHEL 10 and reboot petclinic.example.com</button><P>
+<button class="btn green" onClick="document.location='http://server.example.com/rollback.php'">Rollback and reboot petclinic.example.com</button><P>
