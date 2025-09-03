@@ -13,3 +13,8 @@
   ansible.builtin.copy:
     src: files/ansible
     dest: /home/{{ USERNAME }}
+
+- name: Install php-cli so we can access files in cgi-bin
+  ansible.builtin.dnf:
+    name: php-cli
+    state: latest
