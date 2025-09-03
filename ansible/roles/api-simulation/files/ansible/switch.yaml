@@ -1,0 +1,9 @@
+---
+- name: switch petclinic to RHEL 10 and reboot
+  hosts: appserver
+  become: no
+  gather_facts: no
+
+  tasks:
+  - name: run bootc update
+    ansible.builtin.shell: sudo bootc switch registry.example.com:5000/rhel10/rhel-bootc-app:latest

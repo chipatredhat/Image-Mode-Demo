@@ -1,0 +1,9 @@
+---
+- name: rollback petclinic and reboot
+  hosts: appserver
+  become: no
+  gather_facts: no
+
+  tasks:
+  - name: run bootc rollback
+    ansible.builtin.shell: sudo bootc rollback && sudo reboot

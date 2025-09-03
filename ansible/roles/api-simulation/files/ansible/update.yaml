@@ -1,0 +1,9 @@
+---
+- name: update petclinic and reboot
+  hosts: appserver
+  become: no
+  gather_facts: no
+
+  tasks:
+  - name: run bootc update
+    ansible.builtin.shell: sudo bootc update --apply
