@@ -2,9 +2,11 @@
 # Make and push rhel9-soe
 cd /home/lab-user/Workshop
 podman build -f Containerfile-new --tag registry.example.com:5000/rhel9/rhel-bootc:latest
-podman push registry.example.com:5000/rhel9/rhel-bootc:latest
+podman push registry.example.com:5000/rhel9/rhel-bootc:latest 
+podman build -f Containerfile-rhel10-soe --tag registry.example.com:5000/rhel10/rhel-bootc:latest
+podman push registry.example.com:5000/rhel10/rhel-bootc:latest
 
-# Start runner. ????
+# Start runner
 /home/lab-user/runner/start_runner.sh
 
 # Copy across files
