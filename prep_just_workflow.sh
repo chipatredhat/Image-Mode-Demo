@@ -15,6 +15,7 @@ mkdir -p ${CONTENTDIR}/{petclinic,petclinic/files}
 cp /tmp/ImageModeWorkshop/files/{local.repo,local10.repo,spring-petclinic-2.3.0.BUILD-SNAPSHOT.jar,petclinic.sql,petclinic.service,build_petclinic.yaml} ${CONTENTDIR}/petclinic/files
 cp /tmp/ImageModeWorkshop/files/Containerfile-app-RHEL9 ${CONTENTDIR}/petclinic/Containerfile9
 cp /tmp/ImageModeWorkshop/files/Containerfile-rhel10-app-21 ${CONTENTDIR}/petclinic/Containerfile10
+cp /tmp/ImageModeWorkshop/files/Containerfile-rhel10-soe ${CONTENTDIR}/petclinic/Containerfile-rhel10-soe
 cd /home/lab-user/git/petclinic
 cp -a ${CONTENTDIR}/petclinic/* .
 mkdir -p .gitea/workflows
