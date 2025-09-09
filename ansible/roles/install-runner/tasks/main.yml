@@ -1,10 +1,10 @@
 - name: Write runner token to file
-  ansible.builtin.shell: sudo -u git /usr/local/bin/gitea actions generate-runner-token --config /etc/gitea/app.ini | sudo tee -a /var/www/html/gitea_action
+  ansible.builtin.shell: sudo -u git /usr/local/bin/gitea actions generate-runner-token --config /etc/gitea/app.ini | sudo tee -a {{ WEB_DIRECTORY }}/html/gitea_action
   args:
-    creates: /var/www/html/gitea_action
+    creates: "{{ WEB_DIRECTORY }}/html/gitea_action"
 
 - name: Read runner token into a variable
-  ansible.builtin.shell: cat /var/www/html/gitea_action
+  ansible.builtin.shell: cat {{ WEB_DIRECTORY }}/html/gitea_action
   register: RUNNER_TOKEN
 
 - name: Get current runner version
