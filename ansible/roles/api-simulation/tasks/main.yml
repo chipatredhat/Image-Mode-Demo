@@ -6,8 +6,8 @@
 
 - name: Copy php files
   ansible.builtin.copy:
-    src: files/nginx/html/
-    dest: "{{ WEB_DIRECTORY }}/html"
+    src: files/nginx/
+    dest: "{{ WEB_DIRECTORY }}"
 
 - name: Copy ansible playbooks and files
   ansible.builtin.copy:
