@@ -9,6 +9,9 @@
 #    #ansible.builtin.command: "ansible-galaxy collection install community.crypto"
 #    ansible.builtin.command: "ansible-galaxy install -r roles/requirements.yml"
 #    become: no
+
+# To Do:
+# Add a global vars file
       
   roles:
     - install-vscode
