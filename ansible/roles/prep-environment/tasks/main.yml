@@ -75,3 +75,15 @@
     path: /usr/bin/newgidmap
     capability: cap_setgid+ep
     state: present
+
+- name: Define imnet libvirt network
+  community.libvirt.virt_net:
+    command: define
+    name: imnet
+    xml: '{{ lookup("template", "files/imnet.xml") }}'
+
+- name: Start imnet libvirt network
+  community.libvirt.virt_net:
+    command: start
+    name: imnet
+    autostart: true
