@@ -1,4 +1,4 @@
 WSDIR: /home/{{ USERNAME }}/Workshop
 IMFILES: "{{ WSDIR }}/files"
 USERNAME: "lab-user"
-INSTANCE_TARGETHOST_FILE: "/home/{{ USERNAME }}/.instance_targethost"
+INSTANCE_TARGETHOST_FILE: "/home/{{ USERNAME }}/external_ip"
