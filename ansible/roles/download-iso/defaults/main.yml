@@ -1,0 +1,8 @@
+vars_files:
+  - credentials.yml
+    
+DVD_DIR: /mnt/iso
+RHEL9_SHA: 398561d7b66f1a4bf23664f4aa8f2cfbb3641aa2f01a320068e86bd1fc0e9076. # RHEL 9.4
+RHEL_9_ISO: RHEL_9.iso
+RHEL10_SHA: edce2dd6f8e1d1b2ff0b204f89b0659bc9e320d175beb7caad60712957a19608 # RHEL 10.0
+RHEL_10_ISO: RHEL_10.iso
