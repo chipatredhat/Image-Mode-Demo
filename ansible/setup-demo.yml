@@ -10,6 +10,7 @@
   roles:
     #- prep-environment
     #- download-iso
+    #- configure-firewall
     - install-vscode
     - install-gitea
     - {role: configure-gitea, become_user: lab-user}
