@@ -1,0 +1,3 @@
+WEB_DIRECTORY: "/usr/share/nginx"
+RHEL_9_ISO: RHEL_9.iso
+RHEL_10_ISO: RHEL_10.iso

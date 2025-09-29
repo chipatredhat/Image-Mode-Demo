@@ -87,3 +87,8 @@
     command: start
     name: imnet
     autostart: true
+
+- name: Install the example.com CA rpm so we can push to the registry
+  ansible.builtin.yum:
+    name: files/example.com-root-ca-20240701-1.noarch.rpm
+    disable_gpg_check: yes
