@@ -1,0 +1,24 @@
+- name: Get Download Token
+  ansible.builtin.shell: "curl https://sso.redhat.com/auth/realms/redhat-external/protocol/openid-connect/token -d grant_type=refresh_token -d client_id=rhsm-api -d refresh_token={{ OFFLINE_TOKEN }} | jq --raw-output .access_token"
+  register: DOWNLOAD_TOKEN
+
+- name: Create DVD download directory
+  ansible.builtin.file: 
+    path: "{{ DVD_DIR }}"
+    state: directory
+    mode: '0777'
+  become: true
+
+- name: Download RHEL 9 ISO
+  ansible.builtin.get_url:
+    url: "https://api.access.redhat.com/management/v1/images/{{ RHEL9_SHA}}/download"
+    dest: "{{ DVD_DIR }}/{{ RHEL_9_ISO}}"
+    headers:
+      Authorization: Bearer {{ DOWNLOAD_TOKEN.stdout }}
+
+- name: Download RHEL 10 ISO
+  ansible.builtin.get_url:
+    url: "https://api.access.redhat.com/management/v1/images/{{ RHEL10_SHA}}/download"
+    dest: "{{ DVD_DIR }}/{{ RHEL_10_ISO}}"
+    headers:
+      Authorization: Bearer {{ DOWNLOAD_TOKEN.stdout }}

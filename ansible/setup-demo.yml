@@ -4,17 +4,12 @@
   become: yes
   gather_facts: yes
 
-#  pre_tasks:
-#  - name: Install required ansible-galaxy collection
-#    #ansible.builtin.command: "ansible-galaxy collection install community.crypto"
-#    ansible.builtin.command: "ansible-galaxy install -r roles/requirements.yml"
-#    become: no
-
-# To Do:
-# Add a global vars file
+  vars_files:
+    - credentials.yml
       
   roles:
     #- prep-environment
+    #- download-iso
     - install-vscode
     - install-gitea
     - {role: configure-gitea, become_user: lab-user}
