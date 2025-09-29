@@ -23,4 +23,3 @@
     - {role: git-content, become_user: lab-user}
     - install-runner
     - api-simulation
-git 
