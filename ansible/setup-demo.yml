@@ -12,6 +12,9 @@
     #- download-iso
     #- configure-firewall
     #- install-registry
+    #- pull-images
+    #- user-content
+    #- web-content
     - install-vscode
     - install-gitea
     - {role: configure-gitea, become_user: lab-user}
