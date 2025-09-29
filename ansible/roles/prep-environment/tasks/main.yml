@@ -51,3 +51,27 @@
     state: started
     enabled: true
     name: libvirtd
+
+- name: Enable and start dnsmasq
+  ansible.builtin.systemd_service:
+    name: dnsmasq
+    enabled: true
+    state: started
+
+- name: Enable and start nginx
+  ansible.builtin.systemd_service:
+    name: nginx
+    enabled: true
+    state: started
+
+- name: Check capabilities of newuidmap
+  community.general.capabilities:
+    path: /usr/bin/newuidmap
+    capability: cap_setuid+ep
+    state: present
+
+- name: Check capabilities of newgidmap
+  community.general.capabilities:
+    path: /usr/bin/newgidmap
+    capability: cap_setgid+ep
+    state: present
