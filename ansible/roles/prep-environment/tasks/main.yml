@@ -39,3 +39,15 @@
     - php
     - podman
     - syslinux-tftpboot
+
+- name: Enable firewall
+  ansible.builtin.systemd_service:
+    state: started
+    enabled: true
+    name: firewalld
+
+- name: Enable libvirtd
+  ansible.builtin.systemd_service:
+    state: started
+    enabled: true
+    name: libvirtd
