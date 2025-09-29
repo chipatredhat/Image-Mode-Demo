@@ -1,0 +1,6 @@
+---
+collections:
+- containers.podman
+- ansible.posix
+- community.libvirt
+- community.general

@@ -1,0 +1,16 @@
+- name: Install ansible galaxy collections from {{ REQUIREMENTS_FILE }}
+  ansible.builtin.command: ansible-galaxy install -r {{ REQUIREMENTS_FILE }}
+  become: no
+
+- name: Set the hostname
+  ansible.builtin.hostname:
+    name: "{{ HOSTNAME }}.{{ DOMAINNAME }}"
+
+- name: Add {{ HOSTNAME }} {{ HOSTNAME }}.{{ DOMAINNAME }} to /etc/hosts
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    regexp: '^127\.0\.0\.1'
+    line: "127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4 {{ HOSTNAME }} {{ HOSTNAME }}.{{ DOMAINNAME }}"
+    owner: root
+    group: root
+    mode: 0644
