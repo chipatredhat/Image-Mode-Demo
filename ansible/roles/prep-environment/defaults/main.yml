@@ -1,3 +1,10 @@
 HOSTNAME: "build"
 DOMAINNAME: "example.com"
 REQUIREMENTS_FILE: files/requirements.yml
+DOMAINNAME: "example.com"
+SERVERNAME: "server"
+REGISTRYNAME: "registry"
+REPONAME: "repo"
+KSSERVER: "kickstart"
+GITNAME: "git"
+APPNAME: "petclinic"
