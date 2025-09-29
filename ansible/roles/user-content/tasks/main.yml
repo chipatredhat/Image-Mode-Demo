@@ -1,0 +1,37 @@
+- name: Create workshop directories
+  ansible.builtin.file:
+    state: directory
+    owner: "{{ USERNAME }}"
+    group: users
+    path: "{{ item }}"
+  with_items: 
+    - "{{ WSDIR }}"
+    - "{{ IMFILES }}"
+    - "{{ WSDIR }}/output"
+
+- name: Copy workshop files
+  ansible.builtin.copy:
+    src: files
+    dest: "{{ WSDIR }}/"
+    owner: "{{ USERNAME }}"
+    group: users
+
+- name: Write out URL where you can access the application
+  ansible.builtin.lineinfile:
+    create: true
+    path: "{{ WSDIR }}/Application_URL.txt"
+    line: http://{{ ansible_default_ipv4.address }}:8080
+    owner: "{{ USERNAME }}"
+    group: users
+
+- name: Get TARGETHOST
+  ansible.builtin.command: cat {{ INSTANCE_TARGETHOST_FILE }}
+  register: TARGETHOST
+  # Referenced as TARGETHOST.stdout
+    
+- name: Write novnc URL to a file
+  copy:
+    dest: "{{ WSDIR }}/Web_URL.html"
+    content: |
+      The web interface may be reached at https://{{ TARGETHOST.stdout }}/vnc.html?host={{ TARGETHOST.stdout }}&port=443
+  delegate_to: localhost
