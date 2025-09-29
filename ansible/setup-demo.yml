@@ -11,6 +11,7 @@
     #- prep-environment
     #- download-iso
     #- configure-firewall
+    #- install-registry
     - install-vscode
     - install-gitea
     - {role: configure-gitea, become_user: lab-user}

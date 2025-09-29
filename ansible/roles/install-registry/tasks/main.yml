@@ -1,0 +1,44 @@
+- name: Create the data directory for the registry container
+  ansible.builtin.file:
+    path: "{{ REGISTRYDIR }}/data"
+    state: directory
+
+- name: Create the certs directory for the registry container
+  ansible.builtin.file:
+    path: "{{ REGISTRYDIR }}/certs"
+    state: directory
+
+- name: Install the registry crt
+  ansible.builtin.copy:
+    src: files/wildcard.example.com.crt
+    dest: "{{ REGISTRYDIR }}/certs/wildcard.example.com.crt"
+
+- name: Install the registry key
+  ansible.builtin.copy:
+    src: files/wildcard.example.com.key
+    dest: "{{ REGISTRYDIR }}/certs/wildcard.example.com.key"
+
+- name: Create a container
+  containers.podman.podman_container:
+    name: registry
+    privileged: true
+    publish: 5000:5000
+    volume:
+    - "{{ REGISTRYDIR }}/certs:/certs"
+    - "{{ REGISTRYDIR }}/data:/var/lib/registry:Z"
+    state: started
+    image: registry:latest
+    env:
+      REGISTRY_HTTP_TLS_CERTIFICATE: certs/wildcard.example.com.crt
+      REGISTRY_HTTP_TLS_KEY: certs/wildcard.example.com.key
+
+- name: Install the registry.container service file
+  ansible.builtin.copy:
+    src: files/registry.container
+    dest: /etc/containers/systemd/registry.container
+
+- name: Enable the registry service
+  ansible.builtin.systemd_service:
+    state: started
+    enabled: true
+    name: registry.container
