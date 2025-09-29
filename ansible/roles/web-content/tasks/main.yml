@@ -32,14 +32,14 @@
     opts: ro
     state: mounted
 
-  - name: Copy initrd.img and vmlinuz to "{{ WEB_DIRECTORY }}/html/pxe/rhel9"
-    ansible.builtin.copy:
-      src: "{{ WEB_DIRECTORY }}/html/rhel9/isolinux/"
-      dest: "{{ WEB_DIRECTORY }}/html/pxe/rhel9/"
-      remote_src: true
+- name: Copy initrd.img and vmlinuz to "{{ WEB_DIRECTORY }}/html/pxe/rhel9"
+  ansible.builtin.copy:
+    src: "{{ WEB_DIRECTORY }}/html/rhel9/isolinux/"
+    dest: "{{ WEB_DIRECTORY }}/html/pxe/rhel9/"
+    remote_src: true
 
-  - name: Copy the pxe files to "{{ WEB_DIRECTORY }}/html/pxe"
-    ansible.builtin.copy:
-      src: /tftpboot/
-      dest: "{{ WEB_DIRECTORY }}/html/pxe/"
-      remote_src: true
+- name: Copy the pxe files to "{{ WEB_DIRECTORY }}/html/pxe"
+  ansible.builtin.copy:
+    src: /tftpboot/
+    dest: "{{ WEB_DIRECTORY }}/html/pxe/"
+    remote_src: true
