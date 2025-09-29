@@ -11,14 +11,14 @@
 
 - name: Download RHEL 9 ISO
   ansible.builtin.get_url:
-    url: "https://api.access.redhat.com/management/v1/images/{{ RHEL9_SHA}}/download"
-    dest: "{{ DVD_DIR }}/{{ RHEL_9_ISO}}"
+    url: "https://api.access.redhat.com/management/v1/images/{{ RHEL9_SHA }}/download"
+    dest: "{{ DVD_DIR }}/{{ RHEL_9_ISO }}"
     headers:
       Authorization: Bearer {{ DOWNLOAD_TOKEN.stdout }}
 
 - name: Download RHEL 10 ISO
   ansible.builtin.get_url:
-    url: "https://api.access.redhat.com/management/v1/images/{{ RHEL10_SHA}}/download"
-    dest: "{{ DVD_DIR }}/{{ RHEL_10_ISO}}"
+    url: "https://api.access.redhat.com/management/v1/images/{{ RHEL10_SHA }}/download"
+    dest: "{{ DVD_DIR }}/{{ RHEL_10_ISO }}"
     headers:
       Authorization: Bearer {{ DOWNLOAD_TOKEN.stdout }}
