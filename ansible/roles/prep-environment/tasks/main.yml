@@ -80,7 +80,7 @@
   community.libvirt.virt_net:
     command: define
     name: imnet
-    xml: '{{ lookup("template", "files/imnet.xml") }}'
+    xml: '{{ lookup("template", "{{ playbook_dir }}/roles/prep-environment/files/imnet.xml") }}'
 
 - name: Start imnet libvirt network
   community.libvirt.virt_net:
@@ -90,5 +90,5 @@
 
 - name: Install the example.com CA rpm so we can push to the registry
   ansible.builtin.yum:
-    name: files/example.com-root-ca-20240701-1.noarch.rpm
+    name: "{{ playbook_dir }}/roles/prep-environment/files/example.com-root-ca-20240701-1.noarch.rpm"
     disable_gpg_check: yes
