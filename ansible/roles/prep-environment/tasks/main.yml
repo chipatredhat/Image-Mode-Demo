@@ -1,6 +1,6 @@
-- name: Install ansible galaxy collections from {{ REQUIREMENTS_FILE }}
-  ansible.builtin.command: ansible-galaxy install -r {{ REQUIREMENTS_FILE }}
-  become: no
+#- name: Install ansible galaxy collections from {{ REQUIREMENTS_FILE }}
+#  ansible.builtin.command: ansible-galaxy install -r {{ REQUIREMENTS_FILE }}
+#  become: no
 
 - name: Set the hostname
   ansible.builtin.hostname:
