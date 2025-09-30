@@ -1,0 +1,41 @@
+---
+- name: Prep the server to run the playbook
+  hosts: localhost
+  become: false
+  gather_facts: no
+  
+  vars_files:
+  - "{{ playbook_dir }}/roles/prep-environment/defaults/main.yml"
+
+  tasks:
+
+  - name: Install required collections
+    ansible.builtin.command:
+      cmd: ansible-galaxy collection install -r {{ REQUIREMENTS_FILE }}
+    args:
+      creates: /usr/share/ansible/collections/ansible_collections/community/general
+    become: false
+    changed_when: false
+
+  - name: Create the ssh key for the lab-user
+    ansible.builtin.user:
+      name: "{{ USERNAME }}"
+      generate_ssh_key: yes
+      ssh_key_bits: 2048
+      ssh_key_file: .ssh/id_rsa
+    changed_when: false
+
+  - name: Create and set permissions on authorized_keys
+    ansible.builtin.file:
+      path: /home/{{ USERNAME }}/.ssh/authorized_keys
+      owner: "{{ USERNAME }}"
+      mode: 0600
+      state: touch
+
+  - name: Copy the ed25519 public key to authorized_keys
+    ansible.builtin.lineinfile:
+      path: /home/{{ USERNAME }}/.ssh/authorized_keys
+      line: "{{ lookup('file', '//home/{{ USERNAME }}/.ssh/id_rsa.pub') }}"
+      
+  - name: Make a connection to store the key in known_hosts
+    ansible.builtin.command: ssh -o "StrictHostKeyChecking no" localhost ls
