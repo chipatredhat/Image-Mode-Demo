@@ -81,7 +81,8 @@
     command: define
     name: imnet
     xml: '{{ lookup("template", "{{ playbook_dir }}/roles/prep-environment/files/imnet.xml") }}'
-
+  delegate_to: localhost
+  
 - name: Start imnet libvirt network
   community.libvirt.virt_net:
     command: start
