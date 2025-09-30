@@ -6,7 +6,20 @@
 
   vars_files:
     - credentials.yml
-      
+
+  vars:
+    USERNAME: lab-user
+    REQUIREMENTS_FILE: roles/prep-environment/files/requirements.yml
+
+  pre_tasks:
+    - name: Install required collections
+      ansible.builtin.command:
+        cmd: ansible-galaxy collection install -r {{ REQUIREMENTS_FILE }}
+      args:
+        creates: /usr/share/ansible/collections/ansible_collections/community/general
+      become: false
+      changed_when: false
+
   roles:
     #- prep-environment
     #- download-iso
