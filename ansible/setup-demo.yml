@@ -9,7 +9,7 @@
 
   vars:
     USERNAME: lab-user
-    REQUIREMENTS_FILE: roles/prep-environment/files/requirements.yml
+    REQUIREMENTS_FILE: "{{ playbook_dir }}/roles/prep-environment/files/requirements.yml"
 
   pre_tasks:
     - name: Install required collections
@@ -30,9 +30,9 @@
     #- web-content
     - install-vscode
     - install-gitea
-    - {role: configure-gitea, become_user: lab-user}
+    - {role: configure-gitea, become_user: "{{ USERNAME}}"}
     - install-novnc
     - install-tigervnc-server
-    - {role: git-content, become_user: lab-user}
+    - {role: git-content, become_user: "{{ USERNAME}}"}
     - install-runner
     - api-simulation
