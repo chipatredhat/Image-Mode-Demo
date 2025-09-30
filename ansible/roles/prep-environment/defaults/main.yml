@@ -1,3 +1,4 @@
+USERNAME: lab-user
 HOSTNAME: "build"
 DOMAINNAME: "example.com"
 REQUIREMENTS_FILE: files/requirements.yml
