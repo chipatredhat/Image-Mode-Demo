@@ -121,5 +121,5 @@
 
 - name: Install the example.com CA rpm so we can push to the registry
   ansible.builtin.yum:
-    name:/tmp/example.com-root-ca-20240701-1.noarch.rpm
+    name: /tmp/example.com-root-ca-20240701-1.noarch.rpm
     disable_gpg_check: yes
