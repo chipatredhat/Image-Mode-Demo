@@ -10,6 +10,7 @@
 
   roles:
     #- prep-environment
+    #- create-user
     #- download-iso
     #- configure-firewall
     #- install-registry
