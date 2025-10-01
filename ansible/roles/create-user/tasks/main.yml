@@ -6,7 +6,7 @@
     state: present
     create_home: yes
     shell: /bin/bash
-    password: "$6$g2iJrWYxpV0tii1c$5IVfl6JF57kfqvjILixnnT1Iie.nWdLarD.py4upu7VAIj75Gz6IS1RZmOPbE8D5lFHWExgbUADvadbnEiSmV."  # Password is 'redhat'
+    password: "$6$g2iJrWYxpV0tii1c$5IVfl6JF57kfqvjILixnnT1Iie.nWdLarD.py4upu7VAIj75Gz6IS1RZmOPbE8D5lFHWExgbUADvadbnEiSmV."  # notsecret password is 'redhat'
 
 - name: Enable Linger
   ansible.builtin.shell:
