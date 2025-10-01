@@ -111,7 +111,15 @@
     cmd: virsh net-autostart imnet
   become: true
 
+- name: Copy the example.com CA rpm to /tmp
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/roles/prep-environment/files/example.com-root-ca-20240701-1.noarch.rpm"
+    dest: /tmp/example.com-root-ca-20240701-1.noarch.rpm
+    owner: root
+    group: root
+    mode: '0644'
+
 - name: Install the example.com CA rpm so we can push to the registry
   ansible.builtin.yum:
-    name: "{{ playbook_dir }}/roles/prep-environment/files/example.com-root-ca-20240701-1.noarch.rpm"
+    name:/tmp/example.com-root-ca-20240701-1.noarch.rpm
     disable_gpg_check: yes
