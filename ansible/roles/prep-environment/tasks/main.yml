@@ -76,19 +76,32 @@
     capability: cap_setgid+ep
     state: present
 
+#- name: Define imnet libvirt network
+#  community.libvirt.virt_net:
+#    command: define
+#    name: imnet
+#    xml: '{{ lookup("template", "{{ playbook_dir }}/roles/prep-environment/files/imnet.xml") }}'
+#  delegate_to: localhost
+  
+#- name: Start imnet libvirt network
+#  community.libvirt.virt_net:
+#    command: start
+#    name: imnet
+#    autostart: true
+
 - name: Define imnet libvirt network
-  community.libvirt.virt_net:
-    command: define
-    name: imnet
-    xml: '{{ lookup("template", "{{ playbook_dir }}/roles/prep-environment/files/imnet.xml") }}'
-  delegate_to: localhost
+  ansible.builtin.command:
+    cmd: virsh net-define {{ playbook_dir }}/roles/prep-environment/files/imnet.xml
+  args:
+    creates: /etc/libvirt/qemu/networks/imnet.xml
+  become: false
+  changed_when: false
   
 - name: Start imnet libvirt network
-  community.libvirt.virt_net:
-    command: start
-    name: imnet
-    autostart: true
-
+  ansible.builtin.command:
+    cmd: virsh net-start imnet && virsh net-autostart imnet
+  become: false
+  
 - name: Install the example.com CA rpm so we can push to the registry
   ansible.builtin.yum:
     name: "{{ playbook_dir }}/roles/prep-environment/files/example.com-root-ca-20240701-1.noarch.rpm"
