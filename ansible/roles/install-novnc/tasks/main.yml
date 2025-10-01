@@ -87,4 +87,3 @@
       dest: "/home/{{ VNC_USERNAME }}/novnc_url.html"
       content: |
         Your desktop interface can be reached at https://{{ NOVNC_IP_ADDRESS.stdout }}/vnc.html?host={{ NOVNC_IP_ADDRESS.stdout }}&port=443
-    delegate_to: localhost
