@@ -11,7 +11,8 @@
     - rhel9-soe
     - rhel10-soe
     - petclinic
-    
+  ignore_errors: yes # in case the repo already exists
+  
 - name: Copy git content across
   ansible.builtin.copy:
     src: files/git/
@@ -30,3 +31,5 @@
     - rhel9-soe
     - rhel10-soe
     - petclinic
+  ignore_errors: yes # in case there are no changes to commit
+  
