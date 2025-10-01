@@ -43,6 +43,6 @@
   
 - name: Enable the registry service
   ansible.builtin.systemd_service:
-    state: started
+    #state: started No need to start as the podman container is started above
     enabled: true
     name: registry
