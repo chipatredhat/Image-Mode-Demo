@@ -103,7 +103,12 @@
   
 - name: Start imnet libvirt network
   ansible.builtin.command:
-    cmd: virsh net-start imnet && virsh net-autostart imnet
+    cmd: virsh net-start imnet
+  become: true
+
+- name: Start imnet libvirt network automatically on boot
+  ansible.builtin.command:
+    cmd: virsh net-autostart imnet
   become: true
 
 - name: Install the example.com CA rpm so we can push to the registry
