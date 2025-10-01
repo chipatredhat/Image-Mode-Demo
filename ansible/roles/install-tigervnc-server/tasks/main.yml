@@ -5,11 +5,11 @@
   - name: see if the systemd service file exists
     ansible.builtin.stat:
       path: /usr/lib/systemd/system/vncserver@.service /etc/systemd/system/vncserver@:1.service
-    register: vncserver.service
+    register: vncserver.status
 
   - name: Create tigervnc systemd service
     ansible.builtin.command: cp /usr/lib/systemd/system/vncserver@.service /etc/systemd/system/vncserver@:1.service
-    when: not vncserver.service.stat.exists
+    when: not vncserver.status.stat.exists
 
   - name: Add {{ VNC_USERNAME }} to vncusers
     ansible.builtin.lineinfile:
