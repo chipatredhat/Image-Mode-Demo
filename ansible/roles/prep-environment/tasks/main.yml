@@ -105,11 +105,13 @@
   ansible.builtin.command:
     cmd: virsh net-start imnet
   become: true
+  ignore_errors: true
 
 - name: Start imnet libvirt network automatically on boot
   ansible.builtin.command:
     cmd: virsh net-autostart imnet
   become: true
+  ignore_errors: true
 
 - name: Copy the example.com CA rpm to /tmp
   ansible.builtin.copy:
