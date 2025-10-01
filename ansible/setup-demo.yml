@@ -8,15 +8,6 @@
     - credentials.yml
     - "{{ playbook_dir }}/roles/prep-environment/defaults/main.yml"
 
-  pre_tasks:
-    - name: Install required collections
-      ansible.builtin.command:
-        cmd: ansible-galaxy collection install -r {{ REQUIREMENTS_FILE }}
-      args:
-        creates: /usr/share/ansible/collections/ansible_collections/community/general
-      become: false
-      changed_when: false
-
   roles:
     #- prep-environment
     #- download-iso
