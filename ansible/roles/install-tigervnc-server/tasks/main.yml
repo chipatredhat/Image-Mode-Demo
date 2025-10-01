@@ -9,14 +9,14 @@
 
   - name: Create tigervnc systemd service
     ansible.builtin.command: cp /usr/lib/systemd/system/vncserver@.service /etc/systemd/system/vncserver@:1.service
+    when: not vncserver.service.stat.exists
 
   - name: Add {{ VNC_USERNAME }} to vncusers
     ansible.builtin.lineinfile:
       path: /etc/tigervnc/vncserver.users
       line: ":1={{ VNC_USERNAME }}"
       create: yes
-    when: not vncserver.service.stat.exists
-
+    
   - name: Make {{ VNC_USERNAME }}/.vnc
     ansible.builtin.file:
       path: "/home/{{ VNC_USERNAME }}/.vnc"
