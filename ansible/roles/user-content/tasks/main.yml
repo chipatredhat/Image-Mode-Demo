@@ -11,7 +11,7 @@
 
 - name: Copy workshop files
   ansible.builtin.copy:
-    src: files
+    src: files/
     dest: "{{ WSDIR }}/"
     owner: "{{ USERNAME }}"
     group: users
