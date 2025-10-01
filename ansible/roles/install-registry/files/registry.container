@@ -7,7 +7,7 @@ Environment="REGISTRY_HTTP_TLS_CERTIFICATE=/certs/wildcard.example.com.crt"
 Environment="REGISTRY_HTTP_TLS_KEY=/certs/wildcard.example.com.key"
 Volume=/root/registry/certs:/certs
 Volume=/root/registry/data:/var/lib/registry:Z
-PublishPort=443:5000
+PublishPort=5000:5000
 PodmanArgs=--privileged
 
 [Install]
