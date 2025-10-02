@@ -17,8 +17,11 @@ ansible-gallaxy collection install -r Image-Mode-Demo/ansible/requirements.yml
 ```
 
 * Populate Image-Mode-Demo/ansible/credentials.yml with your credentials (**REQUIRED** unless you are passing the values on the command line)
+
 * Edit the inventory file at Image-Mode-Demo/ansible/inventory.ini
+
   ***NOTE**: Use the values from the deployed systems provision messages to fill in ansible_host= ansible_port= ansible_ssh_pass=*
+  
 * Run the playbook
 
 ```
