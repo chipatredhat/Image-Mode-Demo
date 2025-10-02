@@ -1,0 +1,11 @@
+- name: Create the petclinic directory
+  ansible.builtin.file:
+    path: /home/{{ USERNAME }}/Workshop/content/petclinic/files
+    state: directory
+
+- name: Copy petclinic files
+  ansible.builtin.copy:
+    src: /home/{{ USERNAME }}/Workshop//files/
+    dest: /home/{{ USERNAME }}/Workshop/content/petclinic/files
+    remote_src: no
+  when: PREP_WORKFLOW

@@ -29,5 +29,5 @@
     - {role: git-content, become_user: "{{ USERNAME}}"}
     - install-runner
     - api-simulation
-    - {role: prep-workflow, when: PREP_WORKFLOW}
+    - prep-workflow
     - display-results
