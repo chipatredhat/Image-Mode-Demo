@@ -1,5 +1,5 @@
 ---
-- name: Configure Gitea for use at demo.redhat.com
+- name: Configure Image Mode Workshop for use at demo.redhat.com
   hosts: image_mode
   become: yes
   gather_facts: yes
