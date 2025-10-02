@@ -33,7 +33,7 @@
   when: PREP_WORKFLOW
 
 - name: Set git config
-  ansible.builtin.command: |
+  ansible.builtin.shell: |
     cd /home/{{ USERNAME }}/git/petclinic \
     git config --global user.name "lab-user" \
     git config --global user.email "lab-user@example.com"
