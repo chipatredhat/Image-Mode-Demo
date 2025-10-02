@@ -34,8 +34,8 @@
 
 - name: Set git config
   ansible.builtin.command: |
-    cd /home/{{ USERNAME }}/git/petclinic
-    git config --global user.name "lab-user"
+    cd /home/{{ USERNAME }}/git/petclinic \
+    git config --global user.name "lab-user" \
     git config --global user.email "lab-user@example.com"
   when: PREP_WORKFLOW #### ADD when it hasn't already been done
 
