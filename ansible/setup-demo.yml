@@ -1,6 +1,6 @@
 ---
 - name: Configure Gitea for use at demo.redhat.com
-  hosts: localhost
+  hosts: image_mode
   become: yes
   gather_facts: yes
 
@@ -9,16 +9,16 @@
     - "{{ playbook_dir }}/roles/prep-environment/defaults/main.yml"
 
   roles:
-    #- partition-disk
-    #- prep-environment
-    #- create-user
-    #- download-iso
-    #- configure-firewall
-    #- install-registry
-    #- pull-images
-    #- {role: user-content, become_user: "{{ USERNAME }}"}
-    #- web-content
-    #- prep-workflow
+    - partition-disk
+    - prep-environment
+    - create-user
+    - download-iso
+    - configure-firewall
+    - install-registry
+    - pull-images
+    - {role: user-content, become_user: "{{ USERNAME }}"}
+    - web-content
+    - prep-workflow
     - install-vscode
     - install-gitea
     - {role: configure-gitea, become_user: "{{ USERNAME}}"}
@@ -27,3 +27,4 @@
     - {role: git-content, become_user: "{{ USERNAME}}"}
     - install-runner
     - api-simulation
+    - display-results
