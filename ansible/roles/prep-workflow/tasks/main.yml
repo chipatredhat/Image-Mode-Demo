@@ -1,12 +1,49 @@
-- name: Create the petclinic directory
+- name: Create the petclinic .gitea directory
   ansible.builtin.file:
-    path: /home/{{ USERNAME }}/Workshop/content/petclinic/files
+    path: /home/{{ USERNAME }}/git/petclinic/files/.gitea/workflows
     state: directory
   when: PREP_WORKFLOW
 
 - name: Copy petclinic files
   ansible.builtin.copy:
     src: /home/{{ USERNAME }}/Workshop/files/
-    dest: /home/{{ USERNAME }}/Workshop/content/petclinic/files/
+    dest: /home/{{ USERNAME }}/git/petclinic/
     remote_src: true
   when: PREP_WORKFLOW
+
+- name: Copy Containerfile9
+  ansible.builtin.copy:
+    src: /home/{{ USERNAME }}/Workshop/Containerfile-app-RHEL9
+    dest: /home/{{ USERNAME }}/git/petclinic/Containerfile9
+    remote_src: true
+  when: PREP_WORKFLOW
+
+- name: Copy Containerfile10
+  ansible.builtin.copy:
+    src: /home/{{ USERNAME }}/Workshop/Containerfile-rhel10-app-21
+    dest: /home/{{ USERNAME }}/git/petclinic/petclinic/Containerfile10
+    remote_src: true
+  when: PREP_WORKFLOW
+
+- name: Copy build_petclinic.yaml
+  ansible.builtin.copy:
+    src: /home/{{ USERNAME }}/git/petclinic/petclinic/build_petclinic.yaml
+    dest: /home/{{ USERNAME }}/git/petclinic/.gitea/workflows/build_petclinic.yaml
+    remote_src: true
+  when: PREP_WORKFLOW
+
+- name: Set git config
+  ansible.builtin.command: |
+    cd /home/{{ USERNAME }}/git/petclinic
+    git config --global user.name "lab-user" && git config --global user.email "lab-user@example.com"
+  when: PREP_WORKFLOW. #### ADD when it hasn't already been done
+
+## Make and push rhel9-soe
+#cd /home/lab-user/Workshop
+#podman build -f Containerfile-new --tag registry.example.com:5000/rhel9/rhel-bootc:latest
+#podman push registry.example.com:5000/rhel9/rhel-bootc:latest 
+#podman build -f Containerfile-rhel10-soe --tag registry.example.com:5000/rhel10/rhel-bootc:latest
+#podman push registry.example.com:5000/rhel10/rhel-bootc:latest
+
+## Start runner
+#/home/lab-user/runner/start_runner.sh
