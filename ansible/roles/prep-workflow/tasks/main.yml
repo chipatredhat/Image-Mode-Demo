@@ -1,6 +1,6 @@
 - name: Create the petclinic .gitea directory
   ansible.builtin.file:
-    path: /home/{{ USERNAME }}/git/petclinic/files/.gitea/workflows
+    path: /home/{{ USERNAME }}/git/petclinic/.gitea/workflows
     state: directory
   when: PREP_WORKFLOW
 
