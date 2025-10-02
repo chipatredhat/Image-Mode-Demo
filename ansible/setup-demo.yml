@@ -8,6 +8,9 @@
     - credentials.yml
     - "{{ playbook_dir }}/roles/prep-environment/defaults/main.yml"
 
+  vars:
+    PREP_WORKFLOW: false
+
   roles:
     - partition-disk
     - prep-environment
@@ -18,7 +21,6 @@
     - pull-images
     - {role: user-content, become_user: "{{ USERNAME }}"}
     - web-content
-    - prep-workflow
     - install-vscode
     - install-gitea
     - {role: configure-gitea, become_user: "{{ USERNAME}}"}
@@ -27,4 +29,6 @@
     - {role: git-content, become_user: "{{ USERNAME}}"}
     - install-runner
     - api-simulation
+    - prep-workflow
+      when: PREP_WORKFLOW
     - display-results
