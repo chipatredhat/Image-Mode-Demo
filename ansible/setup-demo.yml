@@ -30,5 +30,5 @@
     - install-runner
     - api-simulation
     - prep-workflow
-      when: PREP_WORKFLOW
+        when: PREP_WORKFLOW
     - display-results
