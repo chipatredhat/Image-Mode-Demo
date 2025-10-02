@@ -7,7 +7,7 @@ This is meant to be run as an Ansible Playbook.  To use:
 * Checkout this repository:
 
 ```
-git pull https://github.com/chipatredhat/Image-Mode-Demo.git
+git clone https://github.com/chipatredhat/Image-Mode-Demo.git
 ```
 
 * Install the required collections:
