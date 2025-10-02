@@ -7,5 +7,5 @@
   ansible.builtin.copy:
     src: /home/{{ USERNAME }}/Workshop//files/
     dest: /home/{{ USERNAME }}/Workshop/content/petclinic/files
-    remote_src: no
+    delegate_to: localhost
   when: PREP_WORKFLOW
