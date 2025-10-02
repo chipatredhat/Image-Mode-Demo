@@ -1,5 +1,5 @@
 - name: Get access URL
-  ansible.builtin.command: cat /home/{{ USERNAME }}/Workshop/novnc_url.html
+  ansible.builtin.command: cat /home/{{ USERNAME }}/Workshop/Web_URL.html
   register: VNC_URL
 
 - name: Finish up by displying how to connect
