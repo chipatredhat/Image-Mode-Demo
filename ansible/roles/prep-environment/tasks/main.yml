@@ -105,7 +105,7 @@
   ansible.builtin.command:
     cmd: virsh net-start imnet
   become: true
-  ignore_errors: true. # Figure out some way to test if it's already started
+  ignore_errors: true # Figure out some way to test if it's already started
 
 - name: Start imnet libvirt network automatically on boot
   ansible.builtin.command:
