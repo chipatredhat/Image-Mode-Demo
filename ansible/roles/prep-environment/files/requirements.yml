@@ -1,7 +1,0 @@
----
-collections:
-- ansible.posix
-- community.libvirt
-- community.general
-- community.crypto
-- containers.podman
