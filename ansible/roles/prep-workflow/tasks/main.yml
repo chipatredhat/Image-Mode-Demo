@@ -2,6 +2,7 @@
   ansible.builtin.file:
     path: /home/{{ USERNAME }}/Workshop/content/petclinic/files
     state: directory
+  when: PREP_WORKFLOW
 
 - name: Copy petclinic files
   ansible.builtin.copy:
