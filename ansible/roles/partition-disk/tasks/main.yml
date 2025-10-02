@@ -1,0 +1,26 @@
+- name: Get disk to partition
+  ansible.builtin.shell: lsblk | grep G | grep -Ev 'vda|loop' | head -1 | awk '{print $1}'
+  register: BLANK_DISK
+
+- name: Check if the disk already exists
+  ansible.builtin.stat:
+    path: /dev/{{ BLANK_DISK.stdout }}1
+  register: NEWDISK
+
+- name: Partition disk
+  ansible.builtin.shell:
+    cmd: echo 'type=83' | sfdisk /dev/{{ BLANK_DISK.stdout }}
+  when: not NEWDISK.stat.exists
+
+- name: Format disk
+  community.general.filesystem:
+    fstype: xfs
+    dev: /dev/{{ BLANK_DISK.stdout }}1
+
+- name: Add disk to fstab and mount
+  ansible.posix.mount:
+    path: /var/lib/libvirt/images
+    src: /dev/{{ BLANK_DISK.stdout }}1
+    fstype: xfs
+    opts: defaults
+    state: mounted
