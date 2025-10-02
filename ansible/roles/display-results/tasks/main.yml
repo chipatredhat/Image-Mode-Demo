@@ -1,8 +1,11 @@
+- name: Get access URL
+  ansible.builtin.command: cat /home/{{ USERNAME }}/Workshop/novnc_url.html
+  register: VNC_URL
+
 - name: Finish up by displying how to connect
   debug:
     msg: |
       The demo environment is ready!
 
-      You can connect via your browser at https://{{ NOVNC_IP_ADDRESS.stdout }}/vnc.html?host={{ NOVNC_IP_ADDRESS.stdout }}&port=443
-    
-      The password for {{ USERNAME }} is: {{ VNC_PASSWORD }}
+      "{{ VNC_URL.stdout }}"
+
