@@ -21,7 +21,7 @@
 - name: Copy Containerfile10
   ansible.builtin.copy:
     src: /home/{{ USERNAME }}/Workshop/Containerfile-rhel10-app-21
-    dest: /home/{{ USERNAME }}/git/petclinic/petclinic/Containerfile10
+    dest: /home/{{ USERNAME }}/git/petclinic/Containerfile10
     remote_src: true
   when: PREP_WORKFLOW
 
