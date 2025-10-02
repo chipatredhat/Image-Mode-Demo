@@ -6,6 +6,6 @@
 - name: Copy petclinic files
   ansible.builtin.copy:
     src: /home/{{ USERNAME }}/Workshop/files/
-    dest: /home/{{ USERNAME }}/Workshop/content/petclinic/files
+    dest: /home/{{ USERNAME }}/Workshop/content/petclinic/files/
     delegate_to: localhost
   when: PREP_WORKFLOW
