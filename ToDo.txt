@@ -1,4 +1,0 @@
-# Add api web pages
-# Change api scripts to use ansible
-# Get rid of haproxy
-# Make a source for files not checked into gitea yet as a reference
