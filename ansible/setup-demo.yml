@@ -9,6 +9,7 @@
     - "{{ playbook_dir }}/roles/prep-environment/defaults/main.yml"
 
   roles:
+    #- partition-disk
     #- prep-environment
     #- create-user
     #- download-iso
@@ -17,6 +18,7 @@
     #- pull-images
     #- {role: user-content, become_user: "{{ USERNAME }}"}
     #- web-content
+    #- prep-workflow
     - install-vscode
     - install-gitea
     - {role: configure-gitea, become_user: "{{ USERNAME}}"}
