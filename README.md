@@ -11,7 +11,7 @@ Install the required collections:
 ansible-gallaxy collection install -r Image-Mode-Demo/ansible/requirements.yml
 ```
 Populate Image-Mode-Demo/ansible/credentials.yml with your credentials (REQUIRED unless you are passing the values on the command line)
-```
+
 Edit the inventory file at Image-Mode-Demo/ansible/inventory.ini
 
 Run the playbook
