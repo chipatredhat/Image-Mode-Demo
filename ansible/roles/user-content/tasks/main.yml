@@ -35,3 +35,11 @@
     content: |
       The web interface may be reached at https://{{ TARGETHOST.stdout }}/vnc.html?host={{ TARGETHOST.stdout }}&port=443
   #delegate_to: localhost
+
+- name: Make pxeboot and build executable
+  ansible.builtin.file: 
+    mode: '0755'
+    path: "{{ item }}"
+  loop:
+    - "{{ WSDIR }}/pxeboot_system.sh"
+    - "{{ WSDIR }}/build_image.sh"
