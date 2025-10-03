@@ -9,7 +9,6 @@
       name: "{{ GIT_ACCOUNTNAME }}"
       group: "{{ GIT_GROUPNAME }}"
       system: true
-      append: yes
       comment: Git Version Control
 
   - name: Create directories in GIT_APP_DIRECTORY
