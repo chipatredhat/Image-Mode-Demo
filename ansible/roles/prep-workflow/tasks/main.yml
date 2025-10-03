@@ -50,6 +50,14 @@
     path: /home/{{ USERNAME }}/Workshop
   when: PREP_WORKFLOW
 
+- name: Build and push rhel9-soe image
+  containers.podman.podman_image:
+    name: registry.example.com:5000/rhel10/rhel-bootc:latest
+    build:
+      file: /home/lab-user/Workshop/Containerfile-rhel10-soe
+    push: true
+    path: /home/{{ USERNAME }}/Workshop
+  when: PREP_WORKFLOW
 #podman build -f Containerfile-new --tag registry.example.com:5000/rhel9/rhel-bootc:latest
 #podman push registry.example.com:5000/rhel9/rhel-bootc:latest 
 #podman build -f Containerfile-rhel10-soe --tag registry.example.com:5000/rhel10/rhel-bootc:latest
