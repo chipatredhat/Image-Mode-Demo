@@ -46,5 +46,6 @@
 #podman build -f Containerfile-rhel10-soe --tag registry.example.com:5000/rhel10/rhel-bootc:latest
 #podman push registry.example.com:5000/rhel10/rhel-bootc:latest
 
-## Start runner
-#/home/lab-user/runner/start_runner.sh
+- name: Start the runner
+  ansible.builtin.command: /home/{{ USERNAME }}/runner/start_runner.sh
+  when: PREP_WORKFLOW 
