@@ -44,6 +44,7 @@
     name: registry.example.com:5000/rhel9/rhel-bootc:latest
     build:
       file: /home/lab-user/Workshop/Containerfile-new
+    pull: false
     push: true
     path: /home/{{ USERNAME }}/Workshop
   when: PREP_WORKFLOW
