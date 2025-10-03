@@ -27,7 +27,7 @@
 
 - name: Copy build_petclinic.yaml
   ansible.builtin.copy:
-    src: /home/{{ USERNAME }}/git/petclinic/build_petclinic.yaml
+    src: /home/{{ USERNAME }}/git/petclinic/files/build_petclinic.yaml
     dest: /home/{{ USERNAME }}/git/petclinic/.gitea/workflows/build_petclinic.yaml
     remote_src: true
   when: PREP_WORKFLOW
