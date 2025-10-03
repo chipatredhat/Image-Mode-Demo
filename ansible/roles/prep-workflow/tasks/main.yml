@@ -40,19 +40,21 @@
   when: PREP_WORKFLOW #### ADD when it hasn't already been done
 
 - name: Build and push rhel9-soe image
-  ansible.builtin.shell:
-    cmd: |
-      cd /home/{{ USERNAME }}/Workshop
-      podman build -f Containerfile-new --tag registry.example.com:5000/rhel9/rhel-bootc:latest
-      podman push registry.example.com:5000/rhel9/rhel-bootc:latest
+  containers.podman.podman_image:
+    name: registry.example.com:5000/rhel9/rhel-bootc:latest
+    build:
+      file: /home/lab-user/Workshop/Containerfile-new
+    push: true
+    path: /home/{{ USERNAME }}/Workshop
   when: PREP_WORKFLOW
 
 - name: Build and push rhel10-soe image
-  ansible.builtin.shell:
-    cmd: |
-      cd /home/{{ USERNAME }}/Workshop
-      podman build -f Containerfile-new --tag registry.example.com:5000/rhel10/rhel-bootc:latest
-      podman push registry.example.com:5000/rhel10/rhel-bootc:latest
+  containers.podman.podman_image:
+    name: registry.example.com:5000/rhel10/rhel-bootc:latest
+    build:
+      file: /home/lab-user/Workshop/Containerfile-rhel10-soe
+    push: true
+    path: /home/{{ USERNAME }}/Workshop
   when: PREP_WORKFLOW
 
 - name: Start the runner
