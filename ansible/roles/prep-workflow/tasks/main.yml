@@ -43,8 +43,7 @@
 #cd /home/lab-user/Workshop
 - name: Build and push rhel9-soe image
   containers.podman.podman_image:
-    tag: registry.example.com:5000/rhel9/rhel-bootc:latest
-    name: rhel-bootc
+    name: registry.example.com:5000/rhel9/rhel-bootc:latest
     build:
       file: /home/lab-user/Workshop/Containerfile-new
     push: true
