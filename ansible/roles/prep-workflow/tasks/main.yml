@@ -41,6 +41,15 @@
 
 ## Make and push rhel9-soe
 #cd /home/lab-user/Workshop
+- name: Build and push rhel9-soe image
+  containers.podman.podman_image:
+    tag: registry.example.com:5000/rhel9/rhel-bootc:latest
+    file: /home/lab-user/Workshop/Containerfile-new
+    push: true
+    push_registry: registry.example.com:5000
+    path: /home/{{ USERNAME }}/Workshop
+  when: PREP_WORKFLOW
+
 #podman build -f Containerfile-new --tag registry.example.com:5000/rhel9/rhel-bootc:latest
 #podman push registry.example.com:5000/rhel9/rhel-bootc:latest 
 #podman build -f Containerfile-rhel10-soe --tag registry.example.com:5000/rhel10/rhel-bootc:latest
