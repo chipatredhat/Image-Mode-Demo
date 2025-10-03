@@ -27,3 +27,9 @@ ansible-gallaxy collection install -r Image-Mode-Demo/ansible/requirements.yml
 ```
 ansible-playbook Image-Mode-Demo/ansible/setup-demo.yml
 ```
+
+* If you wish to prep the environment for just the workflow portion of the workshop, set the PREP_WORKFLOW environment variable to true
+
+```
+ansible-playbook Image-Mode-Demo/ansible/setup-demo.yml -e PREP_WORKFLOW=True
+```
