@@ -39,39 +39,22 @@
     git config --global user.email "lab-user@example.com"
   when: PREP_WORKFLOW #### ADD when it hasn't already been done
 
-- name: Login to registry.redhat.io as user
-  containers.podman.podman_login:
-    username: "{{ PMUSERNAME }}"
-    password: "{{ PMPASSWORD }}"
-    registry: registry.redhat.io
-  become: true
-  become_user: "{{ USERNAME }}"
-
 - name: Build and push rhel9-soe image
-  containers.podman.podman_image:
-    name: registry.example.com:5000/rhel9/rhel-bootc:latest
-    build:
-      file: /home/lab-user/Workshop/Containerfile-new
-    pull: false
-    push: true
-    path: /home/{{ USERNAME }}/Workshop
+  ansible.builtin.shell:
+    cmd: |
+      cd /home/{{ USERNAME }}/Workshop
+      podman build -f Containerfile-new --tag registry.example.com:5000/rhel9/rhel-bootc:latest
+      podman push registry.example.com:5000/rhel9/rhel-bootc:latest
   when: PREP_WORKFLOW
 
 - name: Build and push rhel10-soe image
-  containers.podman.podman_image:
-    name: registry.example.com:5000/rhel10/rhel-bootc:latest
-    build:
-      file: /home/lab-user/Workshop/Containerfile-rhel10-soe
-    push: true
-    path: /home/{{ USERNAME }}/Workshop
+  ansible.builtin.shell:
+    cmd: |
+      cd /home/{{ USERNAME }}/Workshop
+      podman build -f Containerfile-new --tag registry.example.com:5000/rhel10/rhel-bootc:latest
+      podman push registry.example.com:5000/rhel10/rhel-bootc:latest
   when: PREP_WORKFLOW
 
-- name: Logout of registry.redhat.io as user
-  containers.podman.podman_logout:
-    registry: registry.redhat.io
-  become: true
-  become_user: "{{ USERNAME }}"
-  
 - name: Start the runner
   ansible.builtin.command: /home/{{ USERNAME }}/runner/start_runner.sh
   when: PREP_WORKFLOW 
