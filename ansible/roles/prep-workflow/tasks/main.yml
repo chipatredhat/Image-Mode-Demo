@@ -7,7 +7,7 @@
 - name: Copy petclinic files
   ansible.builtin.copy:
     src: /home/{{ USERNAME }}/Workshop/files/
-    dest: /home/{{ USERNAME }}/git/petclinic/
+    dest: /home/{{ USERNAME }}/git/petclinic/files/
     remote_src: true
   when: PREP_WORKFLOW
 
