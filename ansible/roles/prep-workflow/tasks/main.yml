@@ -45,7 +45,8 @@
   containers.podman.podman_image:
     tag: registry.example.com:5000/rhel9/rhel-bootc:latest
     name: rhel-bootc
-    file: /home/lab-user/Workshop/Containerfile-new
+    build:
+      file: /home/lab-user/Workshop/Containerfile-new
     push: true
     push_registry: registry.example.com:5000
     path: /home/{{ USERNAME }}/Workshop
