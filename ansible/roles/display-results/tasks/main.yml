@@ -5,9 +5,6 @@
 - name: Finish up by displying how to connect
   debug:
     msg: |
-      The demo environment is ready!
-
-      "The web interface may be reached at https://{{ EXTERNAL_IP.stdout }}/vnc.html?host={{ EXTERNAL_IP.stdout }}&port=443"
-
-      "Enjoy!"
-
+      - Installation Complete
+      - The web interface may be reached at https://{{ EXTERNAL_IP.stdout }}/vnc.html?host={{ EXTERNAL_IP.stdout }}&port=443
+      - 
