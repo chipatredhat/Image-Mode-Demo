@@ -1,5 +1,5 @@
 - name: Get access URL
-  ansible.builtin.command: cat /home/external_ip.txt
+  ansible.builtin.command: cat /home/{{ USERNAME }}/external_ip
   register: EXTERNAL_IP
 
 - name: Finish up by displying how to connect
