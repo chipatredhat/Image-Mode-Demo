@@ -1,11 +1,13 @@
 - name: Get access URL
-  ansible.builtin.command: cat /home/{{ USERNAME }}/Workshop/Web_URL.html
-  register: VNC_URL
+  ansible.builtin.command: cat /home/external_ip.txt
+  register: EXTERNAL_IP
 
 - name: Finish up by displying how to connect
   debug:
     msg: |
       The demo environment is ready!
 
-      "{{ VNC_URL.stdout }}"
+      "The web interface may be reached at https://{{ EXTERNAL_IP.stdout }}/vnc.html?host={{ EXTERNAL_IP.stdout }}&port=443"
+
+      "Enjoy!"
 
