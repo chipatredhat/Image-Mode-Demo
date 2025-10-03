@@ -48,7 +48,6 @@
     build:
       file: /home/lab-user/Workshop/Containerfile-new
     push: true
-    push_registry: registry.example.com:5000
     path: /home/{{ USERNAME }}/Workshop
   when: PREP_WORKFLOW
 
