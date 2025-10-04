@@ -5,7 +5,7 @@
 - name: Checkout empty repos
   ansible.builtin.shell: |
     cd /home/{{ USERNAME }}/git
-    curl   -X POST "http://server.example.com:3000/api/v1/user/repos"   -H "accept: application/json"   -H "Authorization: token {{ GITEA_USER_TOKEN.stdout }}"   -H "Content-Type: application/json"   -d "{\"name\": \"{{ item }}\"}" -i
+    curl   -X POST "http://git.example.com:3000/api/v1/user/repos"   -H "accept: application/json"   -H "Authorization: token {{ GITEA_USER_TOKEN.stdout }}"   -H "Content-Type: application/json"   -d "{\"name\": \"{{ item }}\"}" -i
     git clone http://lab-user:{{ GITEA_USER_TOKEN.stdout }}@server.example.com:3000/lab-user/{{ item }}.git
   loop:
     - rhel9-soe

@@ -1,3 +1,9 @@
+  - name: Make sure {{USERNAME}} is in the git group
+    ansible.builtin.user:
+    name: "{{USERNAME}}"
+    groups: git
+    append: yes
+
   - name: Create a token for {{ GIT_ACCOUNTNAME }}
     ansible.builtin.command: sudo -u {{ GIT_ACCOUNTNAME }} /usr/local/bin/gitea admin user generate-access-token -u {{ GIT_USERNAME }} --scopes all --config /etc/gitea/app.ini | awk '{print $6}'
     register: USER_TOKEN
