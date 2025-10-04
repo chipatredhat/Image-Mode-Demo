@@ -16,6 +16,17 @@
     owner: "{{ USERNAME }}"
     #group: users
 
+- name: See if external_ip file exists
+  ansible.builtin.stat:
+    path: /home/{{ USERNAME }}/external_ip
+  register: external_ip_file
+
+- name: Create external_ip file if it does not exist
+  ansible.builtin.copy:
+    dest: /home/{{ USERNAME }}/external_ip
+    content: "{{ ansible_default_ipv4.address }}"
+  when: not external_ip_file.stat.exists
+
 - name: Write out URL where you can access the application
   ansible.builtin.lineinfile:
     create: true
