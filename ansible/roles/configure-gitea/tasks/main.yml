@@ -3,6 +3,7 @@
       name: "{{USERNAME}}"
       groups: git
       append: yes
+    become: true
 
   - name: Create a token for {{ GIT_ACCOUNTNAME }}
     ansible.builtin.command: sudo -u {{ GIT_ACCOUNTNAME }} /usr/local/bin/gitea admin user generate-access-token -u {{ GIT_USERNAME }} --scopes all --config /etc/gitea/app.ini | awk '{print $6}'
