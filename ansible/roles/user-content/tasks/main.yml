@@ -2,7 +2,7 @@
   ansible.builtin.file:
     state: directory
     owner: "{{ USERNAME }}"
-    group: users
+    #group: users
     path: "{{ item }}"
   with_items: 
     - "{{ WSDIR }}"
@@ -14,7 +14,7 @@
     src: files/workshop/
     dest: "{{ WSDIR }}/"
     owner: "{{ USERNAME }}"
-    group: users
+    #group: users
 
 - name: Write out URL where you can access the application
   ansible.builtin.lineinfile:
@@ -22,7 +22,7 @@
     path: "{{ WSDIR }}/Application_URL.txt"
     line: http://{{ ansible_default_ipv4.address }}:8080
     owner: "{{ USERNAME }}"
-    group: users
+    #group: users
 
 - name: Get TARGETHOST
   ansible.builtin.command: cat {{ INSTANCE_TARGETHOST_FILE }}
