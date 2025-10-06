@@ -24,10 +24,10 @@
 - name: Check In updates
   ansible.builtin.shell: |
     cd /home/{{ USERNAME }}/git/{{ item }}
-    git add .
-    git commit -m "Ansible Commit"
+#    git add .
+#    git commit -m "Ansible Commit"
     git remote set-url origin http://{{ USERNAME }}:{{ GITEA_USER_TOKEN.stdout }}@git.example.com:3000/lab-user/{{ item }}.git
-    git push
+#    git push
   loop:
     - rhel9-soe
     - rhel10-soe
