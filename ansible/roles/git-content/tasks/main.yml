@@ -1,5 +1,5 @@
 - name: Get gitea token
-  ansible.builtin.shell: cat /home/{{ USERNAME }}/just_gitea_token.txt | awk '{print $6}'
+  ansible.builtin.command: cat /home/{{ USERNAME }}/just_gitea_token.txt | awk '{print $6}'
   register: GITEA_USER_TOKEN
 
 - name: Show token for debugging
