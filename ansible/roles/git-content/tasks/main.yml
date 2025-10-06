@@ -3,10 +3,6 @@
     cmd: cat /home/{{ USERNAME }}/just_gitea_token.txt
   register: GITEA_USER_TOKEN
 
-- name: Show token for debugging
-  ansible.builtin.debug:
-    msg: "Username is {{ USERNAME }} and The Gitea Token is {{ GITEA_USER_TOKEN.stdout }}"
-
 - name: Checkout empty repos
   ansible.builtin.shell: |
     cd /home/{{ USERNAME }}/git
