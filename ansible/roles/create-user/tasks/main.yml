@@ -1,7 +1,7 @@
 - name: Make sure {{USERNAME}} exists
   ansible.builtin.user:
     name: "{{USERNAME}}"
-    group: user
+    group: users
     groups: wheel,libvirt
     append: yes
     state: present
