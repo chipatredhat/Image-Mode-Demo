@@ -18,6 +18,25 @@
       dest: ~/gitea_token.txt
     when: not tokenfile.stat.exists
 
+  - name: Get just the token
+    ansible.builtin.shell: "cat ~/gitea_token.txt | awk '{print $6}'"
+    register: JUST_GITEA_USER_TOKEN
+    become: true
+
+  - name: Check if the just_token has been saved
+    ansible.builtin.stat:
+      path: /home/{{ USERNAME }}/just_gitea_token.txt
+    register: just_tokenfile
+
+  - name: Write out JUST_GITEA_USER_TOKEN to /home/{{ USERNAME }}/just_gitea_token.txt
+    ansible.builtin.copy:
+      content: "{{ JUST_GITEA_USER_TOKEN.stdout }}"
+      dest: "/home/{{ USERNAME }}/just_gitea_token.txt"
+    when: not just_tokenfile.stat.exists
+
+
+
+
   - name: Make git directory
     ansible.builtin.file:
       state: directory
