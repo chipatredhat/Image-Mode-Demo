@@ -4,8 +4,8 @@
 
 - name: Show token for debugging
   ansible.builtin.debug:
-    msg: "The Gitea Token is {{ GITEA_USER_TOKEN.stdout }}"
-    
+    msg: "Username is {{ USERNAME }} and The Gitea Token is {{ GITEA_USER_TOKEN.stdout }}"
+
 - name: Checkout empty repos
   ansible.builtin.shell: |
     cd /home/{{ USERNAME }}/git
