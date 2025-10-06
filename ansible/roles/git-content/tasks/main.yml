@@ -2,6 +2,10 @@
   ansible.builtin.shell: cat /home/{{ USERNAME }}/just_gitea_token.txt | awk '{print $6}'
   register: GITEA_USER_TOKEN
 
+- name: Show token for debugging
+  ansible.builtin.debug:
+    msg: "The Gitea Token is {{ GITEA_USER_TOKEN.stdout }}"
+    
 - name: Checkout empty repos
   ansible.builtin.shell: |
     cd /home/{{ USERNAME }}/git
