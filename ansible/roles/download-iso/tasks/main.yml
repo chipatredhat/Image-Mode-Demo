@@ -20,9 +20,6 @@
     dest: "{{ DVD_DIR }}/{{ RHEL_9_ISO }}"
     headers:
       Authorization: Bearer {{ DOWNLOAD_TOKEN.stdout }}
-    retries: 3
-    delay: 10
-    until: result.rc == 0
   when: not rhel9_iso.stat.exists
 
 - name: Ensure RHEL 10 ISO is not already downloaded
@@ -36,7 +33,4 @@
     dest: "{{ DVD_DIR }}/{{ RHEL_10_ISO }}"
     headers:
       Authorization: Bearer {{ DOWNLOAD_TOKEN.stdout }}
-    retries: 3
-    delay: 10
-    until: result.rc == 0
   when: not rhel10_iso.stat.exists
