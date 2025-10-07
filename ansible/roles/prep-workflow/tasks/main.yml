@@ -57,6 +57,3 @@
     path: /home/{{ USERNAME }}/Workshop
   when: PREP_WORKFLOW
 
-#- name: Start the runner
-#  ansible.builtin.command: cd /home/{{ USERNAME }}/runner && act-runner daemon &  #start_runner.sh
-#  when: PREP_WORKFLOW 

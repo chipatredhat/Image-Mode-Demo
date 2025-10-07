@@ -62,22 +62,21 @@
     group: users
     mode: 0755
     
-# The systemd service doesn't want to play nice, so I'll just start it via bash
-#- name: Copy runner systemd service file
-#  ansible.builtin.copy:
-#    src: files/act-runner.service
-#    dest: /etc/systemd/system/act-runner.service
-
-#- name: Start and enable the runner
-#  ansible.builtin.systemd_service:
-#    state: started
-#    daemon_reload: true
-#    name: act-runner
-#    enabled: true
-
 - name: Ensure enable-linger is set for the user
   ansible.builtin.shell: loginctl enable-linger {{ USERNAME }}
   
-- name: Start the runner
-  ansible.builtin.shell: /home/lab-user/runner/start_runner.sh
+- name: Install act-runner service
+  ansible.builtin.copy:
+    src: files/act-runner.service
+    dest: /etc/systemd/system/act-runner.service
+    owner: root
+    group: root
+    mode: '0644'
+    
+- name: Start and enable act-runner service
+  ansible.builtin.systemd:
+    name: act-runner
+    state: started
+    enabled: yes
+    daemon_reload: yes
 

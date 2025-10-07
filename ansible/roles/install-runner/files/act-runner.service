@@ -1,10 +1,10 @@
 [Unit]
 Description=Gitea Actions runner
 Documentation=https://gitea.com/gitea/act_runner
-After=docker.service
+After=gitea.service # Include if jobs run in Docker containers
 
 [Service]
-ExecStart=/bin/act-runner daemon --config /home/lab-user/runner/config.yaml
+ExecStart= act-runner daemon 
 ExecReload=/bin/kill -s HUP $MAINPID
 WorkingDirectory=/home/lab-user/runner
 TimeoutSec=0
