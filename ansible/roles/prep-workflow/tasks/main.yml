@@ -58,5 +58,5 @@
   when: PREP_WORKFLOW
 
 - name: Start the runner
-  ansible.builtin.command: /usr/bin/act-runner daemon -c /home/{{ USERNAME }}/runner/config.yaml  #start_runner.sh
+  ansible.builtin.command: cd /home/{{ USERNAME }}/runner && act-runner daemon &  #start_runner.sh
   when: PREP_WORKFLOW 
