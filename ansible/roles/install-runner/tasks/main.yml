@@ -78,6 +78,6 @@
 - name: Ensure enable-linger is set for the user
   ansible.builtin.shell: loginctl enable-linger {{ USERNAME }}
   
-#- name: Start the runner
-#  ansible.builtin.shell: /home/lab-user/runner/start_runner.sh
+- name: Start the runner
+  ansible.builtin.shell: /home/lab-user/runner/start_runner.sh
 
