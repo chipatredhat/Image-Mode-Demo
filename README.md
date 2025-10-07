@@ -25,6 +25,13 @@ ansible-galaxy collection install -r Image-Mode-Demo/ansible/requirements.yml
 * Run the playbook
 
 ```text
+ansible-playbook Image-Mode-Demo/ansible/setup-demo.yml -i ansible/inventory.ini
+```
+
+OR
+
+```text
+cd ansible
 ansible-playbook Image-Mode-Demo/ansible/setup-demo.yml
 ```
 
