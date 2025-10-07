@@ -102,8 +102,8 @@
   changed_when: false
   
 - name: Check if imnet libvirt network is active
-  ansible.builtin.command:
-    cmd: virsh net-info imnet
+  ansible.builtin.shell:
+    cmd: virsh net-info imnet | grep -Ei "Active: +yes"
   register: imnet_status
   #failed_when: false
   #changed_when: false
