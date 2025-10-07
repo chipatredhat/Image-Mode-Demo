@@ -13,7 +13,7 @@ git clone https://github.com/chipatredhat/Image-Mode-Demo.git
 * Install the required collections:
 
 ```
-ansible-gallaxy collection install -r Image-Mode-Demo/ansible/requirements.yml
+ansible-galaxy collection install -r Image-Mode-Demo/ansible/requirements.yml
 ```
 
 * Populate Image-Mode-Demo/ansible/credentials.yml with your credentials (**REQUIRED** unless you are passing the values on the command line)
