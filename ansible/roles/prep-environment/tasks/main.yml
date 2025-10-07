@@ -113,7 +113,7 @@
   ansible.builtin.command:
     cmd: virsh net-start imnet
   become: true
-  when: "'Active: yes' not in imnet_status.stdout"
+  when: not imnet_status.rc == 0
   changed_when: "'Active: yes' not in imnet_status.stdout"
   #ignore_errors: true # Figure out some way to test if it's already started
 
