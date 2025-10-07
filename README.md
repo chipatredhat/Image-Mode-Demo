@@ -1,4 +1,4 @@
-# Image-Mode-Demo 
+# Image-Mode-Demo  
 
 This is a collection of ansible rolls to setup a demo of RHEL Image Mode with a pipeline from demo.redhat.com
 
@@ -6,13 +6,13 @@ This is meant to be run as an Ansible Playbook.  To use:
 
 * Checkout this repository:
 
-```
+```text
 git clone https://github.com/chipatredhat/Image-Mode-Demo.git
 ```
 
 * Install the required collections:
 
-```
+```text
 ansible-galaxy collection install -r Image-Mode-Demo/ansible/requirements.yml
 ```
 
@@ -24,12 +24,12 @@ ansible-galaxy collection install -r Image-Mode-Demo/ansible/requirements.yml
   
 * Run the playbook
 
-```
+```text
 ansible-playbook Image-Mode-Demo/ansible/setup-demo.yml
 ```
 
 * If you wish to prep the environment for just the workflow portion of the workshop, set the PREP_WORKFLOW environment variable to true
 
-```
+```text
 ansible-playbook Image-Mode-Demo/ansible/setup-demo.yml -e PREP_WORKFLOW=True
 ```
