@@ -1,3 +1,8 @@
+  - name: See if a token has already been created
+    ansible.builtin.stat:
+      path: ~/gitea_token.txt
+    register: tokenfile
+
   - name: Create a token for {{ GIT_ACCOUNTNAME }}
     ansible.builtin.command: /usr/local/bin/gitea admin user generate-access-token -u {{ GIT_USERNAME }} --scopes all --config /etc/gitea/app.ini | awk '{print $6}'
     #ansible.builtin.command: sudo -u {{ GIT_ACCOUNTNAME }} /usr/local/bin/gitea admin user generate-access-token -u {{ GIT_USERNAME }} --scopes all --config /etc/gitea/app.ini | awk '{print $6}'
@@ -6,11 +11,7 @@
     ignore_errors: true # Ignore this if it's already been created
     become: true
     become_user: "{{ GIT_ACCOUNTNAME }}"
-
-  - name: Check if the token has been saved
-    ansible.builtin.stat:
-      path: ~/gitea_token.txt
-    register: tokenfile
+    when: not tokenfile.stat.exists
 
   - name: Write the token so it is accessible
     ansible.builtin.copy:
