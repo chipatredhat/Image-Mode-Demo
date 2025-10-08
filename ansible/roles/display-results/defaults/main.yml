@@ -1,2 +1,0 @@
-vars_files:
-  - "{{ playbook_dir }}/roles/install-tigervnc-server/defaults/main.yml"
