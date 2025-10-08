@@ -78,11 +78,11 @@
 
   - name: Create admin user in gitea
     ansible.builtin.shell: "sudo -u {{ GIT_ACCOUNTNAME }} /usr/local/bin/gitea admin user create --username {{ GIT_USERNAME }} --password {{ GIT_PASSWORD }} --email {{ GIT_EMAIL }} --must-change-password=false --config /etc/gitea/app.ini"
-    when: user.exists.rc != 0
+    when: user_exists.rc != 0
     #ignore_errors: true # Don't fail if the user already exists
     failed_when: false
     changed_when: false
-    
+
   - name: Make sure {{USERNAME}} is in the git group
     ansible.builtin.user:
       name: "{{USERNAME}}"
