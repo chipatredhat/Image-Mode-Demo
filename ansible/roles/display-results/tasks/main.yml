@@ -1,3 +1,8 @@
+- name: Change {{USERNAME}} password now that we have completed the install
+  ansible.builtin.user:
+    name: "{{USERNAME}}"
+    password: "$6$g2iJrWYxpV0tii1c$5IVfl6JF57kfqvjILixnnT1Iie.nWdLarD.py4upu7VAIj75Gz6IS1RZmOPbE8D5lFHWExgbUADvadbnEiSmV."  # notsecret password is 'redhat'
+
 - name: Get access URL
   ansible.builtin.command: cat /home/{{ USERNAME }}/external_ip
   register: EXTERNAL_IP
@@ -7,4 +12,5 @@
     msg: 
       - Installation Complete
       - The web interface may be reached at https://{{ EXTERNAL_IP.stdout }}/vnc.html?host={{ EXTERNAL_IP.stdout }}&port=443
+      - The username is '{{ USERNAME }}' and the password is 'redhat'
       - Enjoy!
