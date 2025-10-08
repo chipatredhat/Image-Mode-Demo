@@ -2,7 +2,6 @@ USERNAME: lab-user
 HOSTNAME: "build"
 DOMAINNAME: "example.com"
 REQUIREMENTS_FILE: "{{ playbook_dir }}/roles/prep-environment/files/requirements.yml"
-DOMAINNAME: "example.com"
 SERVERNAME: "server"
 REGISTRYNAME: "registry"
 REPONAME: "repo"
