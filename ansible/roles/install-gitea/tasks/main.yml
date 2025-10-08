@@ -75,6 +75,8 @@
   - name: Check to see if {{ GIT_USERNAME }} already exists
     ansible.builtin.shell: "sudo -u {{ GIT_ACCOUNTNAME }} /usr/local/bin/gitea admin user list -c /etc/gitea/app.ini | grep lab-user"
     register: user_exists
+    failed_when: false
+    changed_when: false
 
   - name: Create admin user in gitea
     ansible.builtin.shell: "sudo -u {{ GIT_ACCOUNTNAME }} /usr/local/bin/gitea admin user create --username {{ GIT_USERNAME }} --password {{ GIT_PASSWORD }} --email {{ GIT_EMAIL }} --must-change-password=false --config /etc/gitea/app.ini"

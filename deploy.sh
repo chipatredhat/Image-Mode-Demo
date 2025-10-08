@@ -68,9 +68,25 @@ if [ "${token}" = "null" ] ; then
     exec bash "$0" "$@" # Have script restart after updating
 fi
 
+read -n1 -p "Are you deploying into a CNV Baremetal instance from demo.redhat.com? (Y/N) " RHDP
+echo -e "\n"
+
+if  [ "${RHDP}" = "Y" ] || [ "${RHDP}" = "y" ] ; then
+[[ -z $1 ]] && read -p "What is the opcv0# of the demo server.  EX: ssh.opcv09.rhdp.net is 9? " CNVHOST || CNVHOST=${1}
+[[ -z $2 ]] && read -p "What port is used for ssh? " CNVPORT || CNVPORT=${2}
+[[ -z $3 ]] && read -p "What is the default password? " CNVPASS || CNVPASS=${3}
+else
+[[ -z $1 ]] && read -p "What is IP address or hostname of the server to build? " CNVHOST || CNVHOST=${1}
+read -p "Do you need to partition a second disk? (Y/N) " PARTITION_DISK
+[[ -z $3 ]] && read -p "Do you need to use a password to connect to the server? (Y/N) " USE_PASS
+if [ "${USE_PASS}" = "Y" ] || [ "${USE_PASS}" = "y" ] ; then
+    read -s -p "What is the password to connect to the server? " CNVPASS
+    echo -e "\n"
+echo -e "\n"
+fi
+
 # Ask if this should deploy the full pipeline:
 read -n1 -p "Do you wish to install the full pipeline? (Y/N) " INSTALL_PIPELINE
 echo -e "\n"
 
-read -n1 -p "Are you deploying into a CNV Baremetal instance from demo.redhat.com? " RHDP
-echo -e "\n"
+# We should now have all the info we need, so let's run the playbook:
