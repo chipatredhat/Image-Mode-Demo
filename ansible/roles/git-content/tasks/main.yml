@@ -3,6 +3,11 @@
     cmd: cat /home/{{ USERNAME }}/just_gitea_token.txt
   register: GITEA_USER_TOKEN
 
+- name: Check to see if /home/{{ USERNAME }}/git/petclinic exists
+  ansible.builtin.stat: 
+    path: /home/{{ USERNAME }}/git/petclinic
+  register: petclinic_repo
+
 - name: Checkout empty repos
   ansible.builtin.shell: |
     cd /home/{{ USERNAME }}/git
@@ -13,6 +18,7 @@
     - rhel10-soe
     - petclinic
   ignore_errors: yes # in case the repo already exists
+  when: not petclinic_repo.stat.exists
   
 - name: Copy git content across
   ansible.builtin.copy:
