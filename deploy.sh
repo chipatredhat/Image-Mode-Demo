@@ -28,7 +28,7 @@ REGISTRY_TOKEN=$(grep PMPASSWORD ${CREDENTIALS_DIRECTORY}/credentials.yml | awk 
 REGISTRY_ACCOUNT=$(grep PMUSERNAME ${CREDENTIALS_DIRECTORY}/credentials.yml | awk '{print $2}')
 
 # CHECK_API_TOKEN
-if [ "${API_TOKEN}" = "null" ] ; then
+if [ "${API_TOKEN}" = "" ] ; then
     echo -e "\n\nYour API Token isn't stored in ${CREDENTIALS_DIRECTORY}/credentials.yml.  If you do not currently have one, you can create one at https://access.redhat.com/management/api"
     read -p "What is your API Token? " API_TOKEN
     echo -e "\n"
@@ -39,7 +39,7 @@ if [ "${API_TOKEN}" = "null" ] ; then
 fi
 
 # CHECK_REGISTRY_TOKEN
-if [ "${REGISTRY_TOKEN}" = "null" ] ; then
+if [ "${REGISTRY_TOKEN}" = "" ] ; then
     echo -e "\n\nYour Registry Token isn't stored in ${CREDENTIALS_DIRECTORY}/credentials.yml.   If you do not currently have one, you can create one at https://access.redhat.com/terms-based-registry"
     read -p "What is your Registry Token? " REGISTRY_TOKEN
     echo -e "\n"
@@ -50,7 +50,7 @@ if [ "${REGISTRY_TOKEN}" = "null" ] ; then
 fi
 
 # CHECK_REGISTRY_ACCOUNT
-if [ "${REGISTRY_ACCOUNT}" = "null" ] ; then
+if [ "${REGISTRY_ACCOUNT}" = "" ] ; then
     echo -e "\n\nYour Registry Account Name isn't stored in ${CREDENTIALS_DIRECTORY}/credentials.yml.   If you do not currently have one, you can create one at https://access.redhat.com/terms-based-registry"
     read -p "What is your Registry Account Name? " REGISTRY_ACCOUNT
     echo -e "\n"
