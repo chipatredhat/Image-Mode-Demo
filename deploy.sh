@@ -84,9 +84,13 @@ if  [ "${RHDP}" = "Y" ] || [ "${RHDP}" = "y" ] ; then
 [[ -z $1 ]] && read -p "What is the opcv0# of the demo server.  EX: ssh.opcv09.rhdp.net is 9? " CNVHOST || CNVHOST=${1}
 [[ -z $2 ]] && read -p "What port is used for ssh? " CNVPORT || CNVPORT=${2}
 [[ -z $3 ]] && read -p "What is the default password? " CNVPASS || CNVPASS=${3}
+CNVUSER=lab-user
 else
 [[ -z $1 ]] && read -p "What is IP address or hostname of the server to build? " CNVHOST || CNVHOST=${1}
 read -p "Do you need to partition a second disk? (Y/N) " PARTITION_DISK
+read -p "What is the username to connect to the server? " CNVUSER
+[[ -z $2 ]] && read -p "What port is used for ssh? " CNVPORT || CNVPORT=${2}
+fi
 [[ -z $3 ]] && read -p "Do you need to use a password to connect to the server? (Y/N) " USE_PASS
 if [ "${USE_PASS}" = "Y" ] || [ "${USE_PASS}" = "y" ] ; then
     read -s -p "What is the password to connect to the server? " CNVPASS
@@ -99,3 +103,24 @@ read -n1 -p "Do you wish to install the full pipeline? (Y/N) " INSTALL_PIPELINE
 echo -e "\n"
 
 # We should now have all the info we need, so let's run the playbook:
+if  [ "${RHDP}" = "Y" ] || [ "${RHDP}" = "y" ] ; then
+    if  [ "${INSTALL_PIPELINE}" = "Y" ] || [ "${INSTALL_PIPELINE}" = "y" ] ; then
+        ansible-playbook ansible/setup-demo.yml -e "ansible_host=ssh.ocpv0${CNVHOST}.rhdp.net ansible_user=${CNVUSER} ansible_ssh_pass=${CNVPASS} ansible_port=${CNVPORT}" -e INSTALL_PIPELINE=True
+    else
+        ansible-playbook ansible/setup-demo.yml -e "ansible_host=ssh.ocpv0${CNVHOST}.rhdp.net ansible_user=${CNVUSER} ansible_ssh_pass=${CNVPASS} ansible_port=${CNVPORT}" 
+    fi
+else
+    if  [ "${INSTALL_PIPELINE}" = "Y" ] || [ "${INSTALL_PIPELINE}" = "y" ] ; then
+        if  [ "${PARTITION_DISK}" = "Y" ] || [ "${PARTITION_DISK}" = "y" ] ; then
+            ansible-playbook ansible/setup-demo.yml -e "ansible_host=${CNVHOST} ansible_user=${CNVUSER} ansible_ssh_pass=${CNVPASS} ansible_port=${CNVPORT}" -e INSTALL_PIPELINE=True -e PARTITION_DISK=True
+        else
+            ansible-playbook ansible/setup-demo.yml -e "ansible_host=${CNVHOST} ansible_user=${CNVUSER} ansible_ssh_pass=${CNVPASS} ansible_port=${CNVPORT}" -e INSTALL_PIPELINE=True
+        fi
+    else
+        if  [ "${PARTITION_DISK}" = "Y" ] || [ "${PARTITION_DISK}" = "y" ] ; then
+            ansible-playbook ansible/setup-demo.yml -e "ansible_host=${CNVHOST} ansible_user=${CNVUSER} ansible_ssh_pass=${CNVPASS} ansible_port=${CNVPORT}" -e PARTITION_DISK=True
+        else
+            ansible-playbook ansible/setup-demo.yml -e "ansible_host=${CNVHOST} ansible_user=${CNVUSER} ansible_ssh_pass=${CNVPASS} ansible_port=${CNVPORT}"
+        fi
+    fi
+fi
