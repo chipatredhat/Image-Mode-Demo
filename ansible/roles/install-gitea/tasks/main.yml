@@ -72,9 +72,14 @@
       timeout: 30
     delegate_to: localhost
 
+  - name: Check to see if {{ GIT_USERNAME }} already exists
+    ansible.builtin.shell: "sudo -u {{ GIT_ACCOUNTNAME }} /usr/local/bin/gitea admin user list -c /etc/gitea/app.ini | grep lab-user"
+    register: user_exists
+
   - name: Create admin user in gitea
     ansible.builtin.shell: "sudo -u {{ GIT_ACCOUNTNAME }} /usr/local/bin/gitea admin user create --username {{ GIT_USERNAME }} --password {{ GIT_PASSWORD }} --email {{ GIT_EMAIL }} --must-change-password=false --config /etc/gitea/app.ini"
-    ignore_errors: true # Don't fail if the user already exists
+    when: user.exists.rc != 0
+    #ignore_errors: true # Don't fail if the user already exists
 
   - name: Make sure {{USERNAME}} is in the git group
     ansible.builtin.user:
