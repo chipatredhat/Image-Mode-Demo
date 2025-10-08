@@ -68,6 +68,15 @@ if [ "${token}" = "null" ] ; then
     exec bash "$0" "$@" # Have script restart after updating
 fi
 
+# Check for necessary collections
+for COLLECTION in $(grep - ansible/requirements.yml | cut -d " " -f 2); do
+     ansible-galaxy collection list | grep ${COLLECTION} > /dev/null 2>&1
+     if [ $? -ne 0 ] ; then
+         echo -e "\n\nThe Ansible Collection ${COLLECTION} is not installed.  Installing now.\n\n"
+         ansible-galaxy collection install ${COLLECTION}
+     fi
+done
+
 read -n1 -p "Are you deploying into a CNV Baremetal instance from demo.redhat.com? (Y/N) " RHDP
 echo -e "\n"
 
