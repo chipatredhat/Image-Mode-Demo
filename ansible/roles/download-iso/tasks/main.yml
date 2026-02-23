@@ -22,6 +22,10 @@
       Authorization: Bearer {{ DOWNLOAD_TOKEN.stdout }}
   when: not rhel9_iso.stat.exists
 
+- name: Refresh Download Token (In case download took a long time)
+  ansible.builtin.shell: "curl https://sso.redhat.com/auth/realms/redhat-external/protocol/openid-connect/token -d grant_type=refresh_token -d client_id=rhsm-api -d refresh_token={{ OFFLINE_TOKEN }} | jq --raw-output .access_token"
+  register: DOWNLOAD_TOKEN
+
 - name: Ensure RHEL 10 ISO is not already downloaded
   ansible.builtin.stat:
     path: "{{ DVD_DIR }}/{{ RHEL_10_ISO }}"
