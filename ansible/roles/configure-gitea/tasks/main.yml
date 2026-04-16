@@ -35,8 +35,15 @@
       dest: "/home/{{ USERNAME }}/just_gitea_token.txt"
     when: not just_tokenfile.stat.exists
 
-
-
+  - name: Write git global config
+    ansible.builtin.blockinfile:
+      path: "/home/{{ USERNAME }}/.gitconfig"
+      mode: 0644
+      owner: "{{ USERNAME }}"
+      block: |
+        [user]
+	              name = student
+	              email = student@example.com
 
   - name: Make git directory
     ansible.builtin.file:
