@@ -38,6 +38,7 @@
   - name: Write git global config
     ansible.builtin.blockinfile:
       path: "/home/{{ USERNAME }}/.gitconfig"
+      create: true
       mode: 0644
       owner: "{{ USERNAME }}"
       block: |
