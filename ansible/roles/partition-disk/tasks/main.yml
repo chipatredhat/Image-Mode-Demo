@@ -18,7 +18,7 @@
   community.general.filesystem:
     fstype: xfs
     dev: /dev/{{ BLANK_DISK.stdout }}1
-    when: PARTION_DISK
+  when: PARTION_DISK
 
 - name: Add disk to fstab and mount
   ansible.posix.mount:
@@ -27,4 +27,4 @@
     fstype: xfs
     opts: defaults
     state: mounted
-    when: PARTION_DISK
+  when: PARTION_DISK
