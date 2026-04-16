@@ -42,8 +42,8 @@
       owner: "{{ USERNAME }}"
       block: |
         [user]
-	              name = student
-	              email = student@example.com
+                  name = student
+                  email = student@example.com
 
   - name: Make git directory
     ansible.builtin.file:
