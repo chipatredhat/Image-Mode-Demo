@@ -40,3 +40,8 @@ ansible-playbook Image-Mode-Demo/ansible/setup-demo.yml
 ```text
 ansible-playbook Image-Mode-Demo/ansible/setup-demo.yml -e PREP_WORKFLOW=True
 ```
+
+* If you do NOT wish to partition a second dist (required in RHDP) set
+```text
+-e PARTITION_DISK=False
+```
