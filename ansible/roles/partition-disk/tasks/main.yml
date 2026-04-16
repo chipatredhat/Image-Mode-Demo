@@ -1,21 +1,24 @@
 - name: Get disk to partition
   ansible.builtin.shell: lsblk | grep G | grep -Ev 'vda|sda|loop|^ ' | head -1 | awk '{print $1}'
   register: BLANK_DISK
+  when: PARTION_DISK
 
 - name: Check if the disk already exists
   ansible.builtin.stat:
     path: /dev/{{ BLANK_DISK.stdout }}1
   register: NEWDISK
+  when: PARTION_DISK
 
 - name: Partition disk
   ansible.builtin.shell:
     cmd: echo 'type=83' | sfdisk /dev/{{ BLANK_DISK.stdout }}
-  when: not NEWDISK.stat.exists
+  when: not NEWDISK.stat.exists and PARTION_DISK
 
 - name: Format disk
   community.general.filesystem:
     fstype: xfs
     dev: /dev/{{ BLANK_DISK.stdout }}1
+    when: PARTION_DISK
 
 - name: Add disk to fstab and mount
   ansible.posix.mount:
@@ -24,3 +27,4 @@
     fstype: xfs
     opts: defaults
     state: mounted
+    when: PARTION_DISK
