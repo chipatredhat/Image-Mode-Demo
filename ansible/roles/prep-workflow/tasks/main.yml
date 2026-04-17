@@ -43,7 +43,7 @@
   containers.podman.podman_image:
     name: registry.example.com:5000/rhel9/rhel-bootc:latest
     build:
-      file: /home/lab-user/Workshop/Containerfile-new
+      file: /home/lab-user/git/rhel9-soe/Containerfile
     push: true
     path: /home/{{ USERNAME }}/Workshop
   when: PREP_WORKFLOW
@@ -52,8 +52,15 @@
   containers.podman.podman_image:
     name: registry.example.com:5000/rhel10/rhel-bootc:latest
     build:
-      file: /home/lab-user/Workshop/Containerfile-rhel10-soe
+      file: /home/lab-user/git/rhel10-soe/Containerfile
     push: true
     path: /home/{{ USERNAME }}/Workshop
   when: PREP_WORKFLOW
 
+- name: Build RHEL9 via git action
+  ansible.builtin.shell: |
+    cd /home/{{ USERNAME }}/git/rhel9-soe
+    git add .
+    git commit -m "Initial build of RHEL9 SUB image"
+    git push
+  when: PREP_WORKFLOW
