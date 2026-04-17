@@ -9,8 +9,8 @@
     - "{{ playbook_dir }}/roles/prep-environment/defaults/main.yml"
 
   vars:
-    PREP_WORKFLOW: false
-    PARTION_DISK: true
+    PREP_WORKFLOW: False
+    PARTION_DISK: False
 
   roles:
     - partition-disk
