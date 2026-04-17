@@ -1,0 +1,91 @@
+CHECK_API_TOKEN () {
+if [ "${API_TOKEN}" = "" ] ; then
+    echo -e "\n\nYour API Token isn't stored in ${CREDENTIALS_FILE}.  If you do not currently have one, you can create one at https://access.redhat.com/management/api"
+    read -p "What is your API Token? " API_TOKEN
+    echo -e "\n"
+    read -n1 -p "Would you like to save your API Token to ${CREDENTIALS_FILE} to allow deployments to automatically build? (Y/N) " SAVE_API_TOKEN
+    if [ "${SAVE_API_TOKEN}" = "Y" ] || [ "${SAVE_API_TOKEN}" = "y" ] ; then
+        sed -i '' -e "s|OFFLINE_TOKEN: .*|OFFLINE_TOKEN: ${API_TOKEN}|g" ${CREDENTIALS_FILE}
+    fi
+fi
+}
+
+CHECK_REGISTRY_TOKEN () {
+if [ "${REGISTRY_TOKEN}" = "" ] ; then
+    echo -e "\n\nYour Registry Token isn't stored in ${CREDENTIALS_FILE}.   If you do not currently have one, you can create one at https://access.redhat.com/terms-based-registry"
+    read -p "What is your Registry Token? " REGISTRY_TOKEN
+    echo -e "\n"
+    read -n1 -p "Would you like to save your  Registry Token to ${CREDENTIALS_FILE} to allow deployments to automatically build? (Y/N) " SAVE_REGISTRY_TOKEN
+    if [ "${SAVE_REGISTRY_TOKEN}" = "Y" ] || [ "${SAVE_REGISTRY_TOKEN}" = "y" ] ; then
+        sed -i '' -e "s|PMPASSWORD: .*|PMPASSWORD: ${REGISTRY_TOKEN}|g" ${CREDENTIALS_FILE}
+    fi
+fi
+}
+
+CHECK_REGISTRY_ACCOUNT () {
+if [ "${REGISTRY_ACCOUNT}" = "" ] ; then
+    echo -e "\n\nYour Registry Account Name isn't stored in ${CREDENTIALS_FILE}.   If you do not currently have one, you can create one at https://access.redhat.com/terms-based-registry"
+    read -p "What is your Registry Account Name? " REGISTRY_ACCOUNT
+    echo -e "\n"
+    read -n1 -p "Would you like to save your Registry Account Name to ${CREDENTIALS_FILE} to allow deployments to automatically build? (Y/N) " SAVE_REGISTRY_ACCOUNT
+    if [ "${SAVE_REGISTRY_ACCOUNT}" = "Y" ] || [ "${SAVE_REGISTRY_ACCOUNT}" = "y" ] ; then
+        sed -i '' -e "s|PMUSERNAME: .*|PMUSERNAME: ${REGISTRY_ACCOUNT}|g" ${CREDENTIALS_FILE}
+    fi
+fi
+}
+
+VERIFY_API_TOKEN () {
+token=$(curl -s https://sso.redhat.com/auth/realms/redhat-external/protocol/openid-connect/token -d grant_type=refresh_token -d client_id=rhsm-api -d refresh_token=$API_TOKEN | jq --raw-output .access_token)
+if [ "${token}" = "null" ] ; then
+    echo "Your API Token is not valid.  Please create an updated token at https://access.redhat.com/management/api"
+    read -p "Press any key to restart this script and enter a new API Token or Ctrl-C to escape" -n1 -s
+    exec bash "$0" "$@" # Have script restart after updating
+fi
+}
+
+GET_BUILD_PARAMETERS  () {
+read -n1 -p "Is this install going to rhdp.redhat.com? (Y/N) " IS_RHDP ; echo -e "\n"
+if  [ "${IS_RHDP}" = "Y" ] || [ "${IS_RHDP}" = "y" ] ; then
+[[ -z $1 ]] && read -p "What is the opcv0# of the demo server.  EX: ssh.opcv09.rhdp.net is 9? " CNVHOSTINPUT || CNVHOSTINPUT=${1}
+CNVHOST=$(printf %02d ${CNVHOSTINPUT})
+[[ -z $2 ]] && read -p "What port is used for ssh? " CNVPORT || CNVPORT=${2}
+[[ -z $3 ]] && read -p "What is the default password? " CNVPASS || CNVPASS=${3}
+BUILDHOST=ssh.ocpv${CNVHOST}.rhdp.net
+BUILDUSER=lab-user
+CREATE_PARTITION=YES
+else
+read -p "What is the hostname or IP address of the target server? " BUILDHOST
+read -p "What is the username to connect and run the ansible playbook? " BUILDUSER
+read -s -p "What is the password for ${BUILDUSER}? " CNVPASS
+CNVPORT=22
+CREATE_PARTITION=NO
+fi
+
+# Ask if this should deploy the full pipeline:
+read -n1 -p "Do you wish to install the full pipeline? (Y/N) " INSTALL_PIPELINE ; echo -e "\n"
+if  [ "${INSTALL_PIPELINE}" = "Y" ] || [ "${INSTALL_PIPELINE}" = "y" ] ; then PIPELINE=YES ; else PIPELINE=NO ; fi
+}
+
+WRITE_FILES () {
+# Copy our ssh key to the build target
+sshpass -p ${CNVPASS} ssh-copy-id -p ${CNVPORT} -o StrictHostKeyChecking=no ${BUILDUSER}@${BUILDHOST}
+
+# Create an inventory file with just our build target
+echo -e "[image_mode]\nimagemode ansible_user=${BUILDUSER} ansible_host=${BUILDHOST} ansible_port=${CNVPORT}" > ${SCRIPT_DIR}/ansible/inventory.ini
+
+# Write an ssh connect file
+echo "ssh ${BUILDUSER}@${BUILDHOST} -p ${CNVPORT}" > ssh_connect.sh ; chmod +x ssh_connect.sh
+}
+
+INSTALL_DEMO () {
+# Now run the playbook
+if [ "${PIPELINE}" = "YES" ] && [ "${CREATE_PARTITION}" = "YES" ] ; then
+ ansible-playbook ${SCRIPT_DIR}/ansible/setup-demo.yml -i ${SCRIPT_DIR}/ansible/inventory.ini -e "PARTION_DISK=True PREP_WORKFLOW=True"
+elif [ "${PIPELINE}" = "YES" ] && [ "${CREATE_PARTITION}" = "NO" ] ; then
+ ansible-playbook ${SCRIPT_DIR}/ansible/setup-demo.yml -i ${SCRIPT_DIR}/ansible/inventory.ini -e "PREP_WORKFLOW=True"
+elif [ "${PIPELINE}" = "NO" ] && [ "${CREATE_PARTITION}" = "YES" ] ; then
+ ansible-playbook ${SCRIPT_DIR}/ansible/setup-demo.yml -i ${SCRIPT_DIR}/ansible/inventory.ini -e "PARTION_DISK=True"
+else
+ ansible-playbook ${SCRIPT_DIR}/ansible/setup-demo.yml -i ${SCRIPT_DIR}/ansible/inventory.ini
+fi
+}
