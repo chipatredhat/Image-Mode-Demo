@@ -79,10 +79,15 @@ echo "ssh ${BUILDUSER}@${BUILDHOST} -p ${CNVPORT}" > ssh_connect.sh ; chmod +x s
 
 # Copy DVD files locally to save time if LOCAL_COPY=1 and LOCAL_SOURCE is set in ${HOME}/.secrets/credentials.yml
 COPY_ISO_FILES () {
-    echo "Copying ISO files from ${LOCAL_SOURCE} to ${BUILDHOST}"
-    ssh ${BUILDHOST} mkdir -p /mnt/iso
-    cp ${LOCAL_SOURCE}/rhel-10.0-x86_64-dvd.iso ${BUILDHOST}:/mnt/iso/RHEL_10.iso
-    cp ${LOCAL_SOURCE}/rhel-9.4-x86_64-dvd.iso ${BUILDHOST}:/mnt/RHEL_9.iso
+    if [[ -n "${LOCAL_SOURCE}" ]]; then
+    read --n1 -p "You have set LOCAL_SOURCE to ${LOCAL_SOURCE}.  Do you want to copy ISO files from ${LOCAL_SOURCE} to ${BUILDHOST}? (Y/N) " COPY_ISOS
+    if  [ "${COPY_ISOS}" = "Y" ] || [ "${COPY_ISOS}" = "y" ] ; then
+        echo "Copying ISO files from ${LOCAL_SOURCE} to ${BUILDHOST}"
+        ssh ${BUILDHOST} mkdir -p /mnt/iso
+        cp ${LOCAL_SOURCE}/rhel-10.0-x86_64-dvd.iso ${BUILDHOST}:/mnt/iso/RHEL_10.iso
+        cp ${LOCAL_SOURCE}/rhel-9.4-x86_64-dvd.iso ${BUILDHOST}:/mnt/iso/RHEL_9.iso
+    fi
+    fi
 }
 
 INSTALL_DEMO () {
