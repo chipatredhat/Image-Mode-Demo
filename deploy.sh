@@ -6,6 +6,14 @@
 # Get the path for the directory we are currently in
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
+# Install galaxy collections if they are not already installed
+for COLLECTION in $(grep \- ${SCRIPT_DIR}/ansible/requirements.yml | awk '{print $2}') ; do 
+     ansible-galaxy collection list | grep ${COLLECTION} > /dev/null
+     if [ ! $? = 0 ] ; then echo "Installing ansible galaxy collection ${COLLECTION}" 
+          ansible-galaxy collection install ${COLLECTION}
+     fi
+done
+
 # Use a local credentials file if it exists
 if [ -f "${HOME}/.secrets/credentials.yml" ] ; then
     read -p "Do you wish to use your local credentials file at ${HOME}/.secrets/credentials.yml? (Y/N) " USE_LOCAL_CREDS
