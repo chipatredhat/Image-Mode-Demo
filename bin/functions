@@ -103,5 +103,4 @@ elif [ "${PIPELINE}" = "NO" ] && [ "${CREATE_PARTITION}" = "YES" ] ; then
 else
  ansible-playbook ${SCRIPT_DIR}/ansible/setup-demo.yml -i ${SCRIPT_DIR}/ansible/inventory.ini
 fi
-fi
 }

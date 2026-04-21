@@ -14,6 +14,7 @@ if [ -f "${HOME}/.secrets/credentials.yml" ] ; then
     else
         CREDENTIALS_FILE=${SCRIPT_DIR}/ansible/credentials.yml
     fi
+fi
 
 # Read our credentials into variables if they are set
 API_TOKEN=$(grep OFFLINE_TOKEN ${CREDENTIALS_FILE} | awk '{print $2}')
