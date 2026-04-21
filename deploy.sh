@@ -8,7 +8,7 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 # Use a local credentials file if it exists
 if [ -f "~/.secrets/credentials.yml" ] ; then
-    CREDENTIALS_FILE=~/.secrets/credentials.yml
+    CREDENTIALS_FILE=${HOME}/.secrets/credentials.yml
 else
     CREDENTIALS_FILE=${SCRIPT_DIR}/ansible/credentials.yml
 fi
@@ -31,4 +31,5 @@ CHECK_REGISTRY_ACCOUNT
 VERIFY_API_TOKEN
 GET_BUILD_PARAMETERS
 WRITE_FILES
+if [[ "${LOCAL_COPY}" == "1" && -n "${LOCAL_SOURCE}" ]]; then COPY_ISO_FILES ; fi # See functions for description
 INSTALL_DEMO

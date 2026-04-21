@@ -77,6 +77,14 @@ echo -e "[image_mode]\nimagemode ansible_user=${BUILDUSER} ansible_host=${BUILDH
 echo "ssh ${BUILDUSER}@${BUILDHOST} -p ${CNVPORT}" > ssh_connect.sh ; chmod +x ssh_connect.sh
 }
 
+# Copy DVD files locally to save time if LOCAL_COPY=1 and LOCAL_SOURCE is set in ${HOME}/.secrets/credentials.yml
+COPY_ISO_FILES () {
+    echo "Copying ISO files from ${LOCAL_SOURCE} to ${BUILDHOST}"
+    ssh ${BUILDHOST} mkdir -p /mnt/iso
+    cp ${LOCAL_SOURCE}/rhel-10.0-x86_64-dvd.iso ${BUILDHOST}:/mnt/iso/RHEL_10.iso
+    cp ${LOCAL_SOURCE}/rhel-9.4-x86_64-dvd.iso ${BUILDHOST}:/mnt/RHEL_9.iso
+}
+
 INSTALL_DEMO () {
 # Now run the playbook
 if [ "${PIPELINE}" = "YES" ] && [ "${CREATE_PARTITION}" = "YES" ] ; then
