@@ -8,10 +8,12 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 # Use a local credentials file if it exists
 if [ -f "${HOME}/.secrets/credentials.yml" ] ; then
-    CREDENTIALS_FILE=${HOME}/.secrets/credentials.yml
-else
-    CREDENTIALS_FILE=${SCRIPT_DIR}/ansible/credentials.yml
-fi
+    read -p "Do you wish to use your local credentials file at ${HOME}/.secrets/credentials.yml? (Y/N) " USE_LOCAL_CREDS
+    if  [ "${USE_LOCAL_CREDS}" = "Y" ] || [ "${USE_LOCAL_CREDS}" = "y" ] ; then
+        CREDENTIALS_FILE=${HOME}/.secrets/credentials.yml
+    else
+        CREDENTIALS_FILE=${SCRIPT_DIR}/ansible/credentials.yml
+    fi
 
 # Read our credentials into variables if they are set
 API_TOKEN=$(grep OFFLINE_TOKEN ${CREDENTIALS_FILE} | awk '{print $2}')

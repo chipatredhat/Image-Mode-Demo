@@ -93,12 +93,13 @@ COPY_ISO_FILES () {
 
 INSTALL_DEMO () {
 # Now run the playbook
+if  [ "${USE_LOCAL_CREDS}" = "Y" ] || [ "${USE_LOCAL_CREDS}" = "y" ] ; then ADD_CREDS="" ; else ADD_CREDS="OFFLINE_TOKEN=${API_TOKEN} PMPASSWORD=${REGISTRY_TOKEN} {PMUSERNAME}=${REGISTRY_ACCOUNT}"; fi
 if [ "${PIPELINE}" = "YES" ] && [ "${CREATE_PARTITION}" = "YES" ] ; then
- ansible-playbook ${SCRIPT_DIR}/ansible/setup-demo.yml -i ${SCRIPT_DIR}/ansible/inventory.ini -e "PARTION_DISK=True PREP_WORKFLOW=True"
+ ansible-playbook ${SCRIPT_DIR}/ansible/setup-demo.yml -i ${SCRIPT_DIR}/ansible/inventory.ini -e "PARTION_DISK=True PREP_WORKFLOW=True ${ADD_CREDS}"
 elif [ "${PIPELINE}" = "YES" ] && [ "${CREATE_PARTITION}" = "NO" ] ; then
- ansible-playbook ${SCRIPT_DIR}/ansible/setup-demo.yml -i ${SCRIPT_DIR}/ansible/inventory.ini -e "PREP_WORKFLOW=True"
+ ansible-playbook ${SCRIPT_DIR}/ansible/setup-demo.yml -i ${SCRIPT_DIR}/ansible/inventory.ini -e "PREP_WORKFLOW=True ${ADD_CREDS}"
 elif [ "${PIPELINE}" = "NO" ] && [ "${CREATE_PARTITION}" = "YES" ] ; then
- ansible-playbook ${SCRIPT_DIR}/ansible/setup-demo.yml -i ${SCRIPT_DIR}/ansible/inventory.ini -e "PARTION_DISK=True"
+ ansible-playbook ${SCRIPT_DIR}/ansible/setup-demo.yml -i ${SCRIPT_DIR}/ansible/inventory.ini -e "PARTION_DISK=True ${ADD_CREDS}"
 else
  ansible-playbook ${SCRIPT_DIR}/ansible/setup-demo.yml -i ${SCRIPT_DIR}/ansible/inventory.ini
 fi
