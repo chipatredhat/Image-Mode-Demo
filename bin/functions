@@ -102,7 +102,7 @@ elif [ "${PIPELINE}" = "NO" ] && [ "${CREATE_PARTITION}" = "YES" ] ; then
  ansible-playbook ${SCRIPT_DIR}/ansible/setup-demo.yml -i ${SCRIPT_DIR}/ansible/inventory.ini -e "PARTION_DISK=True ${ADD_CREDS}"
 else
 if  [ "${USE_LOCAL_CREDS}" = "Y" ] || [ "${USE_LOCAL_CREDS}" = "y" ] ; then
- ansible-playbook ${SCRIPT_DIR}/ansible/setup-demo.yml -i ${SCRIPT_DIR}/ansible/inventory.ini-e "${ADD_CREDS}"
+ ansible-playbook ${SCRIPT_DIR}/ansible/setup-demo.yml -i ${SCRIPT_DIR}/ansible/inventory.ini -e "${ADD_CREDS}"
 else
  ansible-playbook ${SCRIPT_DIR}/ansible/setup-demo.yml -i ${SCRIPT_DIR}/ansible/inventory.ini 
 fi
