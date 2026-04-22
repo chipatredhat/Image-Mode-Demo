@@ -1,8 +1,10 @@
 #!/bin/bash
-
-# The following command uses the Ansible AAP API to run a job template
-#curl -s -k -c - -X POST --user 'admin:redhat' https://aap.acme.com/api/controller/v2/job_templates/15/launch/
-
-# This command runs a local playbook when AAP isn't available
-cd /home/lab-user/ansible
-sudo -u lab-user ansible-playbook rollback.yaml
+echo "Content-type: text/html"
+echo ""
+echo "<html><head><meta http-equiv='refresh' content='3;url=/useapi.php'></head>"
+echo "<body style='font-family:sans-serif; padding:20px;'>"
+echo "<center>"
+echo "<h1>Running rollback on Petclinic Application Server</h1><hr><pre></center>"
+sudo -u lab-user ansible-playbook -v /home/lab-user/ansible/rollback.yaml -i appserver, 2>&1
+echo "</pre>"
+echo "</body></html>"
