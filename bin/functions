@@ -81,7 +81,7 @@ echo "ssh ${BUILDUSER}@${BUILDHOST} -p ${CNVPORT}" > ssh_connect.sh ; chmod +x s
 COPY_ISO_FILES () {
     LOCAL_SOURCE=$(grep LOCAL_SOURCE ${CREDENTIALS_FILE} | awk '{print $2}')
     if [[ -n "${LOCAL_SOURCE}" ]] ; then
-    read --n1 -p "You have set LOCAL_SOURCE to ${LOCAL_SOURCE}.  Do you want to copy ISO files from ${LOCAL_SOURCE} to ${BUILDHOST}? (Y/N) " COPY_ISOS
+    read -n1 -p "You have set LOCAL_SOURCE to ${LOCAL_SOURCE}.  Do you want to copy ISO files from ${LOCAL_SOURCE} to ${BUILDHOST}? (Y/N) " COPY_ISOS
     if  [ "${COPY_ISOS}" = "Y" ] || [ "${COPY_ISOS}" = "y" ] ; then
         echo "Copying ISO files from ${LOCAL_SOURCE} to ${BUILDHOST}"
         ssh ${BUILDHOST} sudo mkdir -p /mnt/iso
