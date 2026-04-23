@@ -22,7 +22,13 @@
     - "10.11.12.103 appserver appserver.{{ DOMAINNAME }} petclinic petclinic.{{ DOMAINNAME }}"
     - "10.11.12.104 pipeline pipeline.{{ DOMAINNAME }}"
     - "10.11.12.105 aap aap.{{ DOMAINNAME }}"
-   
+
+- name: Install epel
+  ansible.builtin.yum:
+    name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-{{ ansible_distribution_major_version }}.noarch.rpm
+    state: present
+    disable_gpg_check: true
+
 - name: Install packages
   ansible.builtin.yum:
     name: "{{ rpm_packages }}"
