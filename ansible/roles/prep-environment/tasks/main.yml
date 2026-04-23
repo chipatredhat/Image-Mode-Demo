@@ -36,6 +36,7 @@
     - podman
     - syslinux-tftpboot
     - fcgiwrap
+    - tmux
 
 - name: Enable firewall
   ansible.builtin.systemd_service:
