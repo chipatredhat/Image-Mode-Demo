@@ -18,3 +18,36 @@
   ansible.builtin.dnf:
     name: php-cli
     state: latest
+
+- name: Enable the cgi boolean for selinux
+  ansible.posix.seboolean:
+    name: httpd_enable_cgi
+    state: true
+    persistent: true  
+
+- name: Set file context for /usr/share/nginx/cgi-bin
+  ansible.posix.sefcontext:
+    target: "/usr/share/nginx/cgi-bin(/.*)?"
+    setype: httpd_sys_script_exec_t
+    state: present
+  with_items:
+
+- name: Set file context for /var/run/fcgiwrap(/.*)?
+  ansible.posix.sefcontext:
+    target: "/var/run/fcgiwrap(/.*)?"
+    setype: httpd_var_run_t
+    state: present
+
+- name: Restore file contexts
+  ansible.builtin.command: restorecon -R -v /usr/share/nginx/cgi-bin /var/run/fcgiwrap
+
+- name: Enable the fcgiwrap service
+  ansible.builtin.systemd_service:
+    name: fcgiwrap@nginx.service
+    state: started
+    enabled: true
+
+- name: Now restart nginx to pick up changes
+  ansible.builtin.systemd_service:
+    name: nginx
+    state: restarted
