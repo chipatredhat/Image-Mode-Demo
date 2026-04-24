@@ -31,12 +31,6 @@
     setype: httpd_sys_script_exec_t
     state: present
 
-- name: Set file context for /var/run/fcgiwrap(/.*)?
-  community.general.sefcontext:
-    target: "/var/run/fcgiwrap(/.*)?"
-    setype: httpd_var_run_t
-    state: present
-
 - name: Restore file contexts
   ansible.builtin.command: restorecon -R -v /usr/share/nginx/cgi-bin /var/run/fcgiwrap
 
@@ -46,6 +40,12 @@
     state: started
     enabled: true
 
+- name: Set file context for /var/run/fcgiwrap(/.*)?
+  community.general.sefcontext:
+    target: "/var/run/fcgiwrap(/.*)?"
+    setype: httpd_var_run_t
+    state: present
+    
 - name: Add cgi directory to nginx.conf
   ansible.builtin.blockinfile:
     path: /etc/nginx/nginx.conf
