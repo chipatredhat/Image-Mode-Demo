@@ -56,7 +56,7 @@
   ansible.builtin.blockinfile:
     path: /etc/nginx/nginx.conf
     insertafter: '^ .*location.*50x.html'
-    block: |
+    block: |7 # The 7 should prepend 7 spaces to each line to match the indentation of the nginx.conf file
           }
 
           location /cgi-bin/ {
