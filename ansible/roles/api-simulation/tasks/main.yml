@@ -44,8 +44,8 @@
     state: present
 
 - name: Restore file contexts
-  ansible.builtin.command: restorecon -R -v /usr/share/nginx/cgi-bin /var/run/fcgiwrap
-  
+  ansible.builtin.command: restorecon -R -v /usr/share/nginx/cgi-bin # /var/run/fcgiwrap # Fails as it doesn't exist
+
 - name: Add cgi directory to nginx.conf
   ansible.builtin.blockinfile:
     path: /etc/nginx/nginx.conf
