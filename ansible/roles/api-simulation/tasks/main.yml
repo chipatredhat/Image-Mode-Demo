@@ -31,9 +31,6 @@
     setype: httpd_sys_script_exec_t
     state: present
 
-- name: Restore file contexts
-  ansible.builtin.command: restorecon -R -v /usr/share/nginx/cgi-bin /var/run/fcgiwrap
-
 - name: Enable the fcgiwrap service
   ansible.builtin.systemd_service:
     name: fcgiwrap@nginx.service
@@ -45,7 +42,10 @@
     target: "/var/run/fcgiwrap(/.*)?"
     setype: httpd_var_run_t
     state: present
-    
+
+- name: Restore file contexts
+  ansible.builtin.command: restorecon -R -v /usr/share/nginx/cgi-bin /var/run/fcgiwrap
+  
 - name: Add cgi directory to nginx.conf
   ansible.builtin.blockinfile:
     path: /etc/nginx/nginx.conf
