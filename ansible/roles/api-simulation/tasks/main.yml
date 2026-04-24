@@ -32,7 +32,7 @@
     state: present
 
 - name: Set file context for /var/run/fcgiwrap(/.*)?
-  ansible.posix.sefcontext:
+  community.general.sefcontext:
     target: "/var/run/fcgiwrap(/.*)?"
     setype: httpd_var_run_t
     state: present
