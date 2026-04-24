@@ -30,7 +30,6 @@
     target: "/usr/share/nginx/cgi-bin(/.*)?"
     setype: httpd_sys_script_exec_t
     state: present
-  with_items:
 
 - name: Set file context for /var/run/fcgiwrap(/.*)?
   ansible.posix.sefcontext:

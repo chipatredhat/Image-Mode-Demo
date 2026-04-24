@@ -57,6 +57,7 @@ else
 read -p "What is the hostname or IP address of the target server? " BUILDHOST
 read -p "What is the username to connect and run the ansible playbook? " BUILDUSER
 read -s -p "What is the password for ${BUILDUSER}? " CNVPASS
+echo -e "\n"
 CNVPORT=22
 CREATE_PARTITION=NO
 fi
