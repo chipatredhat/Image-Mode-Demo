@@ -47,6 +47,19 @@
     state: started
     enabled: true
 
+- name: Add cgi directory to nginx.conf
+  ansible.builtin.blockinfile:
+    path: /etc/nginx/nginx.conf
+    insertafter: '^ .*location.*50x.html'
+    block: |
+          }
+
+          location /cgi-bin/ {
+                    root /usr/share/nginx;
+                    fastcgi_pass unix:/run/fcgiwrap/fcgiwrap-nginx.sock;
+                    include fastcgi_params;
+                    fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+
 - name: Now restart nginx to pick up changes
   ansible.builtin.systemd_service:
     name: nginx
