@@ -56,7 +56,8 @@
   ansible.builtin.blockinfile:
     path: /etc/nginx/nginx.conf
     insertafter: '^ .*location.*50x.html'
-    block: |7 # The 7 should prepend 7 spaces to each line to match the indentation of the nginx.conf file
+    block: |
+      {% filter indent(width=7, first=true) %}
           }
 
           location /cgi-bin/ {
@@ -64,7 +65,7 @@
                     fastcgi_pass unix:/run/fcgiwrap/fcgiwrap-nginx.sock;
                     include fastcgi_params;
                     fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-
+       {% endfilter %}
 - name: Now restart nginx to pick up changes
   ansible.builtin.systemd_service:
     name: nginx
