@@ -10,7 +10,7 @@
 
   vars:
     PREP_WORKFLOW: False
-    PARTION_DISK: False
+    PARTITION_DISK: False
 
   roles:
     - partition-disk
