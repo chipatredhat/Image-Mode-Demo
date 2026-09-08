@@ -3,7 +3,7 @@
     state: directory
     path: "{{ item }}"
   with_items: 
-    - "{{ WEB_DIRECTORY }}//html/repo"
+    - "{{ WEB_DIRECTORY }}/html/repo"
     - "{{ WEB_DIRECTORY }}/html/ks"
     - "{{ WEB_DIRECTORY }}/html/rhel9"
     - "{{ WEB_DIRECTORY }}/html/rhel10"
