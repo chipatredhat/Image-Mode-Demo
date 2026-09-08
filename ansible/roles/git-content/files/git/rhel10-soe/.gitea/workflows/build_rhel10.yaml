@@ -1,4 +1,4 @@
-name: Build and Push RHEL 9 SOE Image
+name: Build and Push RHEL 10 SOE Image
 
 on:
   push:
