@@ -46,14 +46,22 @@
     check_mode: false
     # referenced as GITEA_VERSION.stdout
    
+  # curl instead of get_url: RHEL 9's ansible-core 2.14 can't do HTTPS from modules on a Python 3.12 target
   - name: Get gitea binary
-    ansible.builtin.get_url:
-      url: https://dl.gitea.com/gitea/{{ GITEA_VERSION.stdout }}/gitea-{{ GITEA_VERSION.stdout }}-linux-amd64
-      dest: /usr/local/bin/gitea
+    ansible.builtin.shell: |
+      set -e
+      curl -sSfL -o /usr/local/bin/gitea.part https://dl.gitea.com/gitea/{{ GITEA_VERSION.stdout }}/gitea-{{ GITEA_VERSION.stdout }}-linux-amd64
+      mv /usr/local/bin/gitea.part /usr/local/bin/gitea
+    args:
+      creates: /usr/local/bin/gitea
+
+  - name: Set gitea binary ownership, mode and SELinux type
+    ansible.builtin.file:
+      path: /usr/local/bin/gitea
       owner: "{{ GIT_ACCOUNTNAME }}"
-      group: "{{ GIT_GROUPNAME }}" 
+      group: "{{ GIT_GROUPNAME }}"
       mode: a+x
-      setype: bin_t 
+      setype: bin_t
 
   - name: Create gitea.service
     ansible.builtin.copy:

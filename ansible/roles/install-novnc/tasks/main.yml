@@ -14,11 +14,12 @@
       mode: '0440'
       validate: /usr/sbin/visudo -cf %s
 
+  # Let dnf on the target download the rpm itself; Ansible's own URL download breaks
+  # with some ansible-core / Python 3.12 combinations (HTTPSConnection 'cert_file' error)
   - name: Install epel
-    ansible.builtin.yum:
-      name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-{{ ansible_distribution_major_version }}.noarch.rpm
-      state: present
-      disable_gpg_check: true
+    ansible.builtin.command: dnf -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-{{ ansible_distribution_major_version }}.noarch.rpm
+    args:
+      creates: /etc/yum.repos.d/epel.repo
 
   - name: Install novnc
     ansible.builtin.yum:

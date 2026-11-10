@@ -11,10 +11,10 @@ This is meant to be run as an Ansible Playbook.  To use:
 git clone https://github.com/chipatredhat/Image-Mode-Demo.git
 ```
 
-* Install the required collections:
+* Install the required collections (versions are pinned to work with the ansible-core in RHEL 9 AppStream):
 
 ```text
-ansible-galaxy collection install -r Image-Mode-Demo/ansible/requirements.yml
+ansible-galaxy collection install -r Image-Mode-Demo/ansible/requirements.yml -p Image-Mode-Demo/ansible/collections
 ```
 
 * Copy Image-Mode-Demo/ansible/credentials.yml.example to Image-Mode-Demo/ansible/credentials.yml and populate it with your credentials (**REQUIRED** unless you are passing the values on the command line).  credentials.yml is ignored by git so your tokens are never committed.

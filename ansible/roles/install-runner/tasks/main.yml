@@ -24,10 +24,18 @@
   changed_when: false
   failed_when: RUNNER_VERSION.stdout | trim | length == 0
 
+# curl instead of get_url: RHEL 9's ansible-core 2.14 can't do HTTPS from modules on a Python 3.12 target
 - name: Get runner
-  ansible.builtin.get_url:
-    url: https://gitea.com/gitea/act_runner/releases/download/v{{ RUNNER_VERSION.stdout }}/act_runner-{{ RUNNER_VERSION.stdout }}-linux-amd64
-    dest: /usr/bin/act-runner
+  ansible.builtin.shell: |
+    set -e
+    curl -sSfL -o /usr/bin/act-runner.part https://gitea.com/gitea/act_runner/releases/download/v{{ RUNNER_VERSION.stdout }}/act_runner-{{ RUNNER_VERSION.stdout }}-linux-amd64
+    mv /usr/bin/act-runner.part /usr/bin/act-runner
+  args:
+    creates: /usr/bin/act-runner
+
+- name: Set runner ownership and mode
+  ansible.builtin.file:
+    path: /usr/bin/act-runner
     mode: '0770'
     owner: root
     group: users

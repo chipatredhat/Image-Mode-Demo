@@ -2,3 +2,5 @@
 ansible/credentials.yml
 ssh_connect.sh
 .DS_Store
+# Collections installed by deploy.sh / ansible-galaxy
+ansible/collections/

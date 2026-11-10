@@ -23,11 +23,12 @@
     - "10.11.12.104 pipeline pipeline.{{ DOMAINNAME }}"
     - "10.11.12.105 aap aap.{{ DOMAINNAME }}"
 
+# Let dnf on the target download the rpm itself; Ansible's own URL download breaks
+# with some ansible-core / Python 3.12 combinations (HTTPSConnection 'cert_file' error)
 - name: Install epel
-  ansible.builtin.yum:
-    name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-{{ ansible_distribution_major_version }}.noarch.rpm
-    state: present
-    disable_gpg_check: true
+  ansible.builtin.command: dnf -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-{{ ansible_distribution_major_version }}.noarch.rpm
+  args:
+    creates: /etc/yum.repos.d/epel.repo
 
 - name: Install packages
   ansible.builtin.yum:
@@ -43,6 +44,7 @@
     - syslinux-tftpboot
     - fcgiwrap
     - tmux
+    - jq
 
 - name: Enable firewall
   ansible.builtin.systemd_service:

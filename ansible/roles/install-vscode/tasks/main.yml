@@ -1,7 +1,7 @@
+  # rpm --import instead of rpm_key: RHEL 9's ansible-core 2.14 can't do HTTPS from modules on a Python 3.12 target
   - name: Install the vscode gpg key
-    ansible.builtin.rpm_key:
-      state: present
-      key: https://packages.microsoft.com/keys/microsoft.asc
+    ansible.builtin.command: rpm --import https://packages.microsoft.com/keys/microsoft.asc
+    changed_when: false
 
   - name: Create repo file
     ansible.builtin.copy:

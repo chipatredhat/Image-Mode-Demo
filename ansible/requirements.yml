@@ -1,6 +1,14 @@
+# Versions are pinned so the playbook runs with the ansible-core 2.14 shipped in RHEL 9 AppStream.
+# Install next to the playbook (Ansible searches ./collections automatically):
+#   ansible-galaxy collection install -r requirements.yml -p collections
 collections:
-- community.crypto #.x509_certificate
-- ansible.posix
-- community.general
-- community.libvirt
-- containers.podman
+  - name: community.crypto
+    version: ">=2.26.0,<3.0.0"   # 3.x requires ansible-core >= 2.17
+  - name: ansible.posix
+    version: ">=1.5.4,<1.6.0"    # 1.6+ requires ansible-core >= 2.15
+  - name: community.general
+    version: ">=8.6.0,<9.0.0"    # 9+ requires ansible-core >= 2.15
+  - name: community.libvirt
+    version: ">=1.3.0,<3.0.0"
+  - name: containers.podman
+    version: ">=1.18.0,<2.0.0"

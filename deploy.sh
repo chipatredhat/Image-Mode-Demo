@@ -9,13 +9,8 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 # Save the original arguments so functions (and restarts) can use them
 SCRIPT_ARGS=("$@")
 
-# Install galaxy collections if they are not already installed
-for COLLECTION in $(grep \- ${SCRIPT_DIR}/ansible/requirements.yml | awk '{print $2}') ; do 
-     ansible-galaxy collection list | grep ${COLLECTION} > /dev/null
-     if [ ! $? = 0 ] ; then echo "Installing ansible galaxy collection ${COLLECTION}" 
-          ansible-galaxy collection install ${COLLECTION}
-     fi
-done
+# Install the pinned galaxy collections next to the playbook (skips any already installed)
+ansible-galaxy collection install -r "${SCRIPT_DIR}/ansible/requirements.yml" -p "${SCRIPT_DIR}/ansible/collections"
 
 # Use a local credentials file if it exists, otherwise the one in the repo
 CREDENTIALS_FILE=${SCRIPT_DIR}/ansible/credentials.yml
