@@ -1,2 +1,6 @@
 USERNAME: lab-user
 WEB_DIRECTORY: /usr/share/nginx
+
+# The runner project was renamed from act_runner to gitea-runner (https://gitea.com/gitea/runner).
+# Pinned so a new upstream release or rename can't break the build; versions: https://dl.gitea.com/gitea-runner/
+RUNNER_VERSION: "5.4.1"

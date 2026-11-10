@@ -18,17 +18,15 @@
   changed_when: false
   no_log: true
 
-- name: Get current runner version
-  ansible.builtin.shell: curl -s https://dl.gitea.com/act_runner/ | grep href | grep name | head -1 | cut -d '/' -f 3
-  register: RUNNER_VERSION
-  changed_when: false
-  failed_when: RUNNER_VERSION.stdout | trim | length == 0
-
-# curl instead of get_url: RHEL 9's ansible-core 2.14 can't do HTTPS from modules on a Python 3.12 target
-- name: Get runner
+# curl instead of get_url: RHEL 9's ansible-core 2.14 can't do HTTPS from modules on a Python 3.12 target.
+# The binary is still installed as /usr/bin/act-runner so the service and scripts don't change.
+- name: Get gitea-runner {{ RUNNER_VERSION }} and verify its checksum
   ansible.builtin.shell: |
-    set -e
-    curl -sSfL -o /usr/bin/act-runner.part https://gitea.com/gitea/act_runner/releases/download/v{{ RUNNER_VERSION.stdout }}/act_runner-{{ RUNNER_VERSION.stdout }}-linux-amd64
+    set -eo pipefail
+    BASE=https://dl.gitea.com/gitea-runner/{{ RUNNER_VERSION }}/gitea-runner-{{ RUNNER_VERSION }}-linux-amd64
+    curl -sSfL -o /usr/bin/act-runner.part "${BASE}"
+    SUM=$(curl -sSfL "${BASE}.sha256" | awk '{print $1}')
+    echo "${SUM}  /usr/bin/act-runner.part" | sha256sum -c --quiet
     mv /usr/bin/act-runner.part /usr/bin/act-runner
   args:
     creates: /usr/bin/act-runner
