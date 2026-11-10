@@ -12,3 +12,4 @@
 - name: Enable Linger
   ansible.builtin.shell:
     cmd: loginctl enable-linger {{USERNAME}}
+    creates: /var/lib/systemd/linger/{{USERNAME}}

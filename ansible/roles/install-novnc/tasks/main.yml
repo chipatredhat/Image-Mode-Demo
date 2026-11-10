@@ -11,6 +11,8 @@
       create: yes
       owner: root
       group: root
+      mode: '0440'
+      validate: /usr/sbin/visudo -cf %s
 
   - name: Install epel
     ansible.builtin.yum:
@@ -45,7 +47,7 @@
       organizational_unit_name: "Workshop"
 
   - name: Generate a cert in /root
-    openssl_certificate:
+    community.crypto.x509_certificate:
       path: /root/self.crt
       privatekey_path: /root/self.key
       csr_path: /root/self.csr

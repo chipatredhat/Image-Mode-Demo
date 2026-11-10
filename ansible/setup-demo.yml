@@ -5,12 +5,24 @@
   gather_facts: yes
 
   vars_files:
-    - credentials.yml
+    # Use credentials.yml if it exists, otherwise the (empty) example so the assert below explains what is missing
+    - [credentials.yml, credentials.yml.example]
     - "{{ playbook_dir }}/roles/prep-environment/defaults/main.yml"
 
   vars:
     PREP_WORKFLOW: False
     PARTITION_DISK: False
+
+  pre_tasks:
+    - name: Make sure the required credentials are set
+      ansible.builtin.assert:
+        that:
+          - OFFLINE_TOKEN is defined and OFFLINE_TOKEN is not none and OFFLINE_TOKEN | string | length > 0
+          - PMUSERNAME is defined and PMUSERNAME is not none and PMUSERNAME | string | length > 0
+          - PMPASSWORD is defined and PMPASSWORD is not none and PMPASSWORD | string | length > 0
+        fail_msg: "OFFLINE_TOKEN, PMUSERNAME and PMPASSWORD must be set in credentials.yml or passed with -e"
+        quiet: true
+      no_log: true
 
   roles:
     - partition-disk

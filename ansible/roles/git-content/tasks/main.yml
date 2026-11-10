@@ -2,6 +2,8 @@
   ansible.builtin.shell: 
     cmd: cat /home/{{ USERNAME }}/just_gitea_token.txt
   register: GITEA_USER_TOKEN
+  changed_when: false
+  no_log: true
 
 - name: Check to see if /home/{{ USERNAME }}/git/petclinic exists
   ansible.builtin.stat: 

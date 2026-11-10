@@ -1,29 +1,60 @@
+# The PHP pages call the scripts in /var/www/cgi-bin, nginx serves them from /usr/share/nginx/cgi-bin
 - name: Copy cgi-bin files
   ansible.builtin.copy:
     src: files/nginx/cgi-bin/
-    dest: /var/www/cgi-bin
-    mode: 0755
+    dest: "{{ item }}"
+    mode: '0755'
+  loop:
+    - /var/www/cgi-bin
+    - "{{ WEB_DIRECTORY }}/cgi-bin"
 
 - name: Copy php files
   ansible.builtin.copy:
-    src: files/nginx/
-    dest: "{{ WEB_DIRECTORY }}"
+    src: files/nginx/html/
+    dest: "{{ WEB_DIRECTORY }}/html/"
 
 - name: Copy ansible playbooks and files
   ansible.builtin.copy:
     src: files/ansible
     dest: /home/{{ USERNAME }}
 
-- name: Install php-cli so we can access files in cgi-bin
+- name: Install php-cli and php-fpm (php-fpm also creates the apache user)
   ansible.builtin.dnf:
-    name: php-cli
+    name:
+      - php-cli
+      - php-fpm
     state: latest
+
+- name: Install the petclinic-api wrapper used by the CGI scripts
+  ansible.builtin.copy:
+    src: files/petclinic-api
+    dest: /usr/local/bin/petclinic-api
+    owner: root
+    group: root
+    mode: '0755'
+
+# Only allow the web server users to run the wrapper with its three fixed actions
+- name: Allow nginx and php-fpm to run the petclinic-api wrapper as {{ USERNAME }}
+  ansible.builtin.copy:
+    dest: /etc/sudoers.d/petclinic-api
+    content: |
+      nginx,apache ALL=({{ USERNAME }}) NOPASSWD: /usr/local/bin/petclinic-api update, /usr/local/bin/petclinic-api switch, /usr/local/bin/petclinic-api rollback
+    owner: root
+    group: root
+    mode: '0440'
+    validate: /usr/sbin/visudo -cf %s
+
+- name: Enable and start php-fpm so nginx can serve the php pages
+  ansible.builtin.systemd_service:
+    name: php-fpm
+    state: started
+    enabled: true
 
 - name: Enable the cgi boolean for selinux
   ansible.posix.seboolean:
     name: httpd_enable_cgi
     state: true
-    persistent: true  
+    persistent: true
 
 - name: Set file context for /usr/share/nginx/cgi-bin
   community.general.sefcontext:
@@ -51,11 +82,16 @@
 
 - name: Restore file contexts
   ansible.builtin.command: restorecon -R -v /usr/share/nginx/cgi-bin # /var/run/fcgiwrap # Fails as it doesn't exist
+  register: restorecon_result
+  changed_when: restorecon_result.stdout | length > 0
 
+# The block closes the existing 50x location and opens a new one for cgi-bin.
+# validate makes sure a bad edit never replaces a working nginx.conf.
 - name: Add cgi directory to nginx.conf
   ansible.builtin.blockinfile:
     path: /etc/nginx/nginx.conf
     insertafter: '^ .*location.*50x.html'
+    validate: /usr/sbin/nginx -t -c %s
     block: |
       {% filter indent(width=7, first=true) %}
           }
@@ -63,9 +99,10 @@
           location /cgi-bin/ {
                     root /usr/share/nginx;
                     fastcgi_pass unix:/run/fcgiwrap/fcgiwrap-nginx.sock;
-                    include fastcgi_params;
+                    include /etc/nginx/fastcgi_params;
                     fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
        {% endfilter %}
+
 - name: Now restart nginx to pick up changes
   ansible.builtin.systemd_service:
     name: nginx

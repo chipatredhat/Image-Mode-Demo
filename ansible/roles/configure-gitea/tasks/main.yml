@@ -1,39 +1,39 @@
   - name: See if a token has already been created
     ansible.builtin.stat:
-      path: ~/gitea_token.txt
+      path: /home/{{ USERNAME }}/gitea_token.txt
     register: tokenfile
 
-  - name: Create a token for {{ GIT_ACCOUNTNAME }}
-    ansible.builtin.command: /usr/local/bin/gitea admin user generate-access-token -u {{ GIT_USERNAME }} --scopes all --config /etc/gitea/app.ini | awk '{print $6}'
-    #ansible.builtin.command: sudo -u {{ GIT_ACCOUNTNAME }} /usr/local/bin/gitea admin user generate-access-token -u {{ GIT_USERNAME }} --scopes all --config /etc/gitea/app.ini | awk '{print $6}'
+  # Output looks like: "Access token was successfully created: <token>"
+  - name: Create a token for {{ GIT_USERNAME }}
+    ansible.builtin.command: /usr/local/bin/gitea admin user generate-access-token -u {{ GIT_USERNAME }} --scopes all --config /etc/gitea/app.ini
     register: USER_TOKEN
-    # referenced as USER_TOKEN.stdout
-    ignore_errors: true # Ignore this if it's already been created
     become: true
     become_user: "{{ GIT_ACCOUNTNAME }}"
+    no_log: true
     when: not tokenfile.stat.exists
+    failed_when: USER_TOKEN.rc != 0 or (USER_TOKEN.stdout | trim | length == 0)
 
   - name: Write the token so it is accessible
     ansible.builtin.copy:
       content: "{{ USER_TOKEN.stdout }}"
-      dest: ~/gitea_token.txt
+      dest: /home/{{ USERNAME }}/gitea_token.txt
+      mode: '0600'
+    no_log: true
     when: not tokenfile.stat.exists
 
   - name: Get just the token
-    ansible.builtin.shell: "cat ~/gitea_token.txt | awk '{print $6}'"
+    ansible.builtin.shell: "awk '{print $NF}' /home/{{ USERNAME }}/gitea_token.txt"
     register: JUST_GITEA_USER_TOKEN
-    become: true
-
-  - name: Check if the just_token has been saved
-    ansible.builtin.stat:
-      path: /home/{{ USERNAME }}/just_gitea_token.txt
-    register: just_tokenfile
+    changed_when: false
+    no_log: true
+    failed_when: JUST_GITEA_USER_TOKEN.rc != 0 or (JUST_GITEA_USER_TOKEN.stdout | trim | length == 0)
 
   - name: Write out JUST_GITEA_USER_TOKEN to /home/{{ USERNAME }}/just_gitea_token.txt
     ansible.builtin.copy:
       content: "{{ JUST_GITEA_USER_TOKEN.stdout }}"
       dest: "/home/{{ USERNAME }}/just_gitea_token.txt"
-    when: not just_tokenfile.stat.exists
+      mode: '0600'
+    no_log: true
 
   - name: Write git global config
     ansible.builtin.blockinfile:

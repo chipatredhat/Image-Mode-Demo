@@ -1,15 +1,28 @@
+# The registration token is kept in /root (not the web root) so it is not publicly downloadable
+- name: Remove the old publicly readable runner token if present
+  ansible.builtin.file:
+    path: "{{ WEB_DIRECTORY }}/html/gitea_action"
+    state: absent
+
 - name: Write runner token to file
-  ansible.builtin.shell: sudo -u git /usr/local/bin/gitea actions generate-runner-token --config /etc/gitea/app.ini | sudo tee -a {{ WEB_DIRECTORY }}/html/gitea_action
+  ansible.builtin.shell: |
+    umask 077
+    sudo -u git /usr/local/bin/gitea actions generate-runner-token --config /etc/gitea/app.ini > /root/gitea_runner_token
   args:
-    creates: "{{ WEB_DIRECTORY }}/html/gitea_action"
+    creates: /root/gitea_runner_token
+  no_log: true
 
 - name: Read runner token into a variable
-  ansible.builtin.shell: cat {{ WEB_DIRECTORY }}/html/gitea_action
+  ansible.builtin.command: cat /root/gitea_runner_token
   register: RUNNER_TOKEN
+  changed_when: false
+  no_log: true
 
 - name: Get current runner version
   ansible.builtin.shell: curl -s https://dl.gitea.com/act_runner/ | grep href | grep name | head -1 | cut -d '/' -f 3
   register: RUNNER_VERSION
+  changed_when: false
+  failed_when: RUNNER_VERSION.stdout | trim | length == 0
 
 - name: Get runner
   ansible.builtin.get_url:
@@ -43,16 +56,12 @@
     owner: "{{ USERNAME }}"
     group: users
 
-- name: Copy runner config
-  ansible.builtin.copy:
-    src: files/runner.cfg
-    dest: /home/{{ USERNAME }}/runner/config.yaml
-    owner: "{{ USERNAME }}"
-    group: users
-    
 - name: Register runner
-  ansible.builtin.shell: cd ~/runner && /usr/bin/act-runner register -c ~/runner/config.yaml --no-interactive --instance http://server.example.com:3000 --token {{ RUNNER_TOKEN.stdout }}
+  ansible.builtin.shell: cd /home/{{ USERNAME }}/runner && /usr/bin/act-runner register -c /home/{{ USERNAME }}/runner/config.yaml --no-interactive --instance http://server.example.com:3000 --token {{ RUNNER_TOKEN.stdout }}
+  args:
+    creates: /home/{{ USERNAME }}/runner/.runner
   become_user: "{{ USERNAME }}"
+  no_log: true
 
 - name: Copy start_runner.sh
   ansible.builtin.copy:
@@ -61,10 +70,7 @@
     owner: "{{ USERNAME }}"
     group: users
     mode: 0755
-    
-- name: Ensure enable-linger is set for the user
-  ansible.builtin.shell: loginctl enable-linger {{ USERNAME }}
-  
+
 - name: Install act-runner service
   ansible.builtin.copy:
     src: files/act-runner.service
@@ -72,11 +78,10 @@
     owner: root
     group: root
     mode: '0644'
-    
+
 - name: Start and enable act-runner service
   ansible.builtin.systemd:
     name: act-runner
     state: started
     enabled: yes
     daemon_reload: yes
-

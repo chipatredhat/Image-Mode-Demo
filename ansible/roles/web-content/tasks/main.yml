@@ -11,7 +11,7 @@
     - "{{ WEB_DIRECTORY }}/html/pxe/pxelinux.cfg"
     - "{{ WEB_DIRECTORY }}/html/petclinic"
 
-- name: # Copy everything we need to the webserver
+- name: Copy everything we need to the webserver
   ansible.builtin.copy:
     src: files/
     dest: "{{ WEB_DIRECTORY }}/html/"

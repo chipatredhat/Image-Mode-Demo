@@ -1,6 +1,9 @@
 - name: Get Download Token
-  ansible.builtin.shell: "curl https://sso.redhat.com/auth/realms/redhat-external/protocol/openid-connect/token -d grant_type=refresh_token -d client_id=rhsm-api -d refresh_token={{ OFFLINE_TOKEN }} | jq --raw-output .access_token"
+  ansible.builtin.shell: "set -o pipefail; curl -sf https://sso.redhat.com/auth/realms/redhat-external/protocol/openid-connect/token -d grant_type=refresh_token -d client_id=rhsm-api -d refresh_token={{ OFFLINE_TOKEN }} | jq --raw-output .access_token"
   register: DOWNLOAD_TOKEN
+  changed_when: false
+  no_log: true
+  failed_when: DOWNLOAD_TOKEN.rc != 0 or DOWNLOAD_TOKEN.stdout in ['', 'null']
 
 - name: Create DVD download directory
   ansible.builtin.file: 
@@ -18,13 +21,18 @@
   ansible.builtin.get_url:
     url: "https://api.access.redhat.com/management/v1/images/{{ RHEL9_SHA }}/download"
     dest: "{{ DVD_DIR }}/{{ RHEL_9_ISO }}"
+    checksum: "sha256:{{ RHEL9_SHA }}"
     headers:
       Authorization: Bearer {{ DOWNLOAD_TOKEN.stdout }}
+  no_log: true
   when: not rhel9_iso.stat.exists
 
 - name: Refresh Download Token (In case download took a long time)
-  ansible.builtin.shell: "curl https://sso.redhat.com/auth/realms/redhat-external/protocol/openid-connect/token -d grant_type=refresh_token -d client_id=rhsm-api -d refresh_token={{ OFFLINE_TOKEN }} | jq --raw-output .access_token"
+  ansible.builtin.shell: "set -o pipefail; curl -sf https://sso.redhat.com/auth/realms/redhat-external/protocol/openid-connect/token -d grant_type=refresh_token -d client_id=rhsm-api -d refresh_token={{ OFFLINE_TOKEN }} | jq --raw-output .access_token"
   register: DOWNLOAD_TOKEN
+  changed_when: false
+  no_log: true
+  failed_when: DOWNLOAD_TOKEN.rc != 0 or DOWNLOAD_TOKEN.stdout in ['', 'null']
 
 - name: Ensure RHEL 10 ISO is not already downloaded
   ansible.builtin.stat:
@@ -35,6 +43,8 @@
   ansible.builtin.get_url:
     url: "https://api.access.redhat.com/management/v1/images/{{ RHEL10_SHA }}/download"
     dest: "{{ DVD_DIR }}/{{ RHEL_10_ISO }}"
+    checksum: "sha256:{{ RHEL10_SHA }}"
     headers:
       Authorization: Bearer {{ DOWNLOAD_TOKEN.stdout }}
+  no_log: true
   when: not rhel10_iso.stat.exists

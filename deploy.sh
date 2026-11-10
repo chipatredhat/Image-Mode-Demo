@@ -6,6 +6,9 @@
 # Get the path for the directory we are currently in
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
+# Save the original arguments so functions (and restarts) can use them
+SCRIPT_ARGS=("$@")
+
 # Install galaxy collections if they are not already installed
 for COLLECTION in $(grep \- ${SCRIPT_DIR}/ansible/requirements.yml | awk '{print $2}') ; do 
      ansible-galaxy collection list | grep ${COLLECTION} > /dev/null
@@ -14,23 +17,23 @@ for COLLECTION in $(grep \- ${SCRIPT_DIR}/ansible/requirements.yml | awk '{print
      fi
 done
 
-# Use a local credentials file if it exists
+# Use a local credentials file if it exists, otherwise the one in the repo
+CREDENTIALS_FILE=${SCRIPT_DIR}/ansible/credentials.yml
+#[ -f "${CREDENTIALS_FILE}" ] || cp "${SCRIPT_DIR}/ansible/credentials.yml.example" "${CREDENTIALS_FILE}"
 if [ -f "${HOME}/.secrets/credentials.yml" ] ; then
     read -p "Do you wish to use your local credentials file at ${HOME}/.secrets/credentials.yml? (Y/N) " USE_LOCAL_CREDS
     if  [ "${USE_LOCAL_CREDS}" = "Y" ] || [ "${USE_LOCAL_CREDS}" = "y" ] ; then
         CREDENTIALS_FILE=${HOME}/.secrets/credentials.yml
-    else
-        CREDENTIALS_FILE=${SCRIPT_DIR}/ansible/credentials.yml
     fi
 fi
 
 # Read our credentials into variables if they are set
-API_TOKEN=$(grep OFFLINE_TOKEN ${CREDENTIALS_FILE} | awk '{print $2}')
-REGISTRY_TOKEN=$(grep PMPASSWORD ${CREDENTIALS_FILE} | awk '{print $2}')
-REGISTRY_ACCOUNT=$(grep PMUSERNAME ${CREDENTIALS_FILE} | awk '{print $2}')
+API_TOKEN=$(grep OFFLINE_TOKEN "${CREDENTIALS_FILE}" | awk '{print $2}')
+REGISTRY_TOKEN=$(grep PMPASSWORD "${CREDENTIALS_FILE}" | awk '{print $2}')
+REGISTRY_ACCOUNT=$(grep PMUSERNAME "${CREDENTIALS_FILE}" | awk '{print $2}')
 
 # Ensure we have the latest from git
-git pull
+git -C "${SCRIPT_DIR}" pull
  
 # Import functions
 source ${SCRIPT_DIR}/bin/functions
@@ -40,7 +43,7 @@ CHECK_API_TOKEN
 CHECK_REGISTRY_TOKEN
 CHECK_REGISTRY_ACCOUNT
 VERIFY_API_TOKEN
-GET_BUILD_PARAMETERS
+GET_BUILD_PARAMETERS "${SCRIPT_ARGS[@]}"
 WRITE_FILES
 COPY_ISO_FILES # See functions for description
 INSTALL_DEMO

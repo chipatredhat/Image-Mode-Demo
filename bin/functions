@@ -1,3 +1,8 @@
+# Portable in-place edit of the credentials file (works with GNU and BSD sed)
+SET_CREDENTIAL () {
+    sed -i.bak -e "$1" "${CREDENTIALS_FILE}" && rm -f "${CREDENTIALS_FILE}.bak"
+}
+
 CHECK_API_TOKEN () {
 if [ "${API_TOKEN}" = "" ] ; then
     echo -e "\n\nYour API Token isn't stored in ${CREDENTIALS_FILE}.  If you do not currently have one, you can create one at https://access.redhat.com/management/api"
@@ -5,7 +10,7 @@ if [ "${API_TOKEN}" = "" ] ; then
     echo -e "\n"
     read -n1 -p "Would you like to save your API Token to ${CREDENTIALS_FILE} to allow deployments to automatically build? (Y/N) " SAVE_API_TOKEN
     if [ "${SAVE_API_TOKEN}" = "Y" ] || [ "${SAVE_API_TOKEN}" = "y" ] ; then
-        sed -i '' -e "s|OFFLINE_TOKEN: .*|OFFLINE_TOKEN: ${API_TOKEN}|g" ${CREDENTIALS_FILE}
+        SET_CREDENTIAL "s|OFFLINE_TOKEN: .*|OFFLINE_TOKEN: ${API_TOKEN}|g"
     fi
 fi
 }
@@ -17,7 +22,7 @@ if [ "${REGISTRY_TOKEN}" = "" ] ; then
     echo -e "\n"
     read -n1 -p "Would you like to save your  Registry Token to ${CREDENTIALS_FILE} to allow deployments to automatically build? (Y/N) " SAVE_REGISTRY_TOKEN
     if [ "${SAVE_REGISTRY_TOKEN}" = "Y" ] || [ "${SAVE_REGISTRY_TOKEN}" = "y" ] ; then
-        sed -i '' -e "s|PMPASSWORD: .*|PMPASSWORD: ${REGISTRY_TOKEN}|g" ${CREDENTIALS_FILE}
+        SET_CREDENTIAL "s|PMPASSWORD: .*|PMPASSWORD: ${REGISTRY_TOKEN}|g"
     fi
 fi
 }
@@ -29,17 +34,17 @@ if [ "${REGISTRY_ACCOUNT}" = "" ] ; then
     echo -e "\n"
     read -n1 -p "Would you like to save your Registry Account Name to ${CREDENTIALS_FILE} to allow deployments to automatically build? (Y/N) " SAVE_REGISTRY_ACCOUNT
     if [ "${SAVE_REGISTRY_ACCOUNT}" = "Y" ] || [ "${SAVE_REGISTRY_ACCOUNT}" = "y" ] ; then
-        sed -i '' -e "s|PMUSERNAME: .*|PMUSERNAME: ${REGISTRY_ACCOUNT}|g" ${CREDENTIALS_FILE}
+        SET_CREDENTIAL "s|PMUSERNAME: .*|PMUSERNAME: ${REGISTRY_ACCOUNT}|g"
     fi
 fi
 }
 
 VERIFY_API_TOKEN () {
-token=$(curl -s https://sso.redhat.com/auth/realms/redhat-external/protocol/openid-connect/token -d grant_type=refresh_token -d client_id=rhsm-api -d refresh_token=$API_TOKEN | jq --raw-output .access_token)
+token=$(curl -s https://sso.redhat.com/auth/realms/redhat-external/protocol/openid-connect/token -d grant_type=refresh_token -d client_id=rhsm-api -d refresh_token="${API_TOKEN}" | jq --raw-output .access_token)
 if [ "${token}" = "null" ] ; then
     echo "Your API Token is not valid.  Please create an updated token at https://access.redhat.com/management/api"
     read -p "Press any key to restart this script and enter a new API Token or Ctrl-C to escape" -n1 -s
-    exec bash "$0" "$@" # Have script restart after updating
+    exec bash "$0" "${SCRIPT_ARGS[@]}" # Have script restart after updating
 fi
 }
 
@@ -75,38 +80,38 @@ sshpass -p ${CNVPASS} ssh-copy-id -p ${CNVPORT} -o StrictHostKeyChecking=no ${BU
 echo -e "[image_mode]\nimagemode ansible_user=${BUILDUSER} ansible_host=${BUILDHOST} ansible_port=${CNVPORT}" > ${SCRIPT_DIR}/ansible/inventory.ini
 
 # Write an ssh connect file
-echo "ssh ${BUILDUSER}@${BUILDHOST} -p ${CNVPORT}" > ssh_connect.sh ; chmod +x ssh_connect.sh
+echo "ssh ${BUILDUSER}@${BUILDHOST} -p ${CNVPORT}" > "${SCRIPT_DIR}/ssh_connect.sh" ; chmod +x "${SCRIPT_DIR}/ssh_connect.sh"
 }
 
 # Copy DVD files locally to save time if LOCAL_COPY=1 and LOCAL_SOURCE is set in ${HOME}/.secrets/credentials.yml
 COPY_ISO_FILES () {
-    LOCAL_SOURCE=$(grep LOCAL_SOURCE ${CREDENTIALS_FILE} | awk '{print $2}')
+    LOCAL_SOURCE=$(grep LOCAL_SOURCE "${CREDENTIALS_FILE}" | awk '{print $2}')
     if [[ -n "${LOCAL_SOURCE}" ]] ; then
     read -n1 -p "You have set LOCAL_SOURCE to ${LOCAL_SOURCE}.  Do you want to copy ISO files from ${LOCAL_SOURCE} to ${BUILDHOST}? (Y/N) " COPY_ISOS
     if  [ "${COPY_ISOS}" = "Y" ] || [ "${COPY_ISOS}" = "y" ] ; then
         echo "Copying ISO files from ${LOCAL_SOURCE} to ${BUILDHOST}"
-        ssh ${BUILDHOST} sudo mkdir -p /mnt/iso
-        ssh ${BUILDHOST} sudo chmod 777 /mnt/iso
-        scp ${LOCAL_SOURCE}/rhel-10.0-x86_64-dvd.iso ${BUILDHOST}:/mnt/iso/RHEL_10.iso
-        scp ${LOCAL_SOURCE}/rhel-9.4-x86_64-dvd.iso ${BUILDHOST}:/mnt/iso/RHEL_9.iso
+        ssh -p "${CNVPORT}" "${BUILDUSER}@${BUILDHOST}" sudo mkdir -p /mnt/iso
+        ssh -p "${CNVPORT}" "${BUILDUSER}@${BUILDHOST}" sudo chmod 777 /mnt/iso
+        scp -P "${CNVPORT}" "${LOCAL_SOURCE}/rhel-10.0-x86_64-dvd.iso" "${BUILDUSER}@${BUILDHOST}:/mnt/iso/RHEL_10.iso"
+        scp -P "${CNVPORT}" "${LOCAL_SOURCE}/rhel-9.4-x86_64-dvd.iso" "${BUILDUSER}@${BUILDHOST}:/mnt/iso/RHEL_9.iso"
     fi
     fi
 }
 
 INSTALL_DEMO () {
+# Always pass the credentials we collected (from a file or the prompts) to the playbook.
+# They go in a private temporary vars file so they never appear on the command line.
+CREDS_VARS_FILE=$(mktemp)
+chmod 600 "${CREDS_VARS_FILE}"
+trap 'rm -f "${CREDS_VARS_FILE}"' EXIT
+SQ="'" # Escape single quotes for YAML single-quoted strings
+printf "OFFLINE_TOKEN: '%s'\nPMUSERNAME: '%s'\nPMPASSWORD: '%s'\n" \
+    "${API_TOKEN//$SQ/$SQ$SQ}" "${REGISTRY_ACCOUNT//$SQ/$SQ$SQ}" "${REGISTRY_TOKEN//$SQ/$SQ$SQ}" > "${CREDS_VARS_FILE}"
+
+EXTRA_VARS=(-e "@${CREDS_VARS_FILE}")
+[ "${PIPELINE}" = "YES" ] && EXTRA_VARS+=(-e "PREP_WORKFLOW=True")
+[ "${CREATE_PARTITION}" = "YES" ] && EXTRA_VARS+=(-e "PARTITION_DISK=True")
+
 # Now run the playbook
-if  [ "${USE_LOCAL_CREDS}" = "Y" ] || [ "${USE_LOCAL_CREDS}" = "y" ] ; then ADD_CREDS="OFFLINE_TOKEN=${API_TOKEN} PMPASSWORD=${REGISTRY_TOKEN} PMUSERNAME=${REGISTRY_ACCOUNT}" ; else ADD_CREDS=""; fi
-if [ "${PIPELINE}" = "YES" ] && [ "${CREATE_PARTITION}" = "YES" ] ; then
- ansible-playbook ${SCRIPT_DIR}/ansible/setup-demo.yml -i ${SCRIPT_DIR}/ansible/inventory.ini -e "PARTION_DISK=True PREP_WORKFLOW=True ${ADD_CREDS}"
-elif [ "${PIPELINE}" = "YES" ] && [ "${CREATE_PARTITION}" = "NO" ] ; then
- ansible-playbook ${SCRIPT_DIR}/ansible/setup-demo.yml -i ${SCRIPT_DIR}/ansible/inventory.ini -e "PREP_WORKFLOW=True ${ADD_CREDS}"
-elif [ "${PIPELINE}" = "NO" ] && [ "${CREATE_PARTITION}" = "YES" ] ; then
- ansible-playbook ${SCRIPT_DIR}/ansible/setup-demo.yml -i ${SCRIPT_DIR}/ansible/inventory.ini -e "PARTION_DISK=True ${ADD_CREDS}"
-else
-if  [ "${USE_LOCAL_CREDS}" = "Y" ] || [ "${USE_LOCAL_CREDS}" = "y" ] ; then
- ansible-playbook ${SCRIPT_DIR}/ansible/setup-demo.yml -i ${SCRIPT_DIR}/ansible/inventory.ini -e "${ADD_CREDS}"
-else
- ansible-playbook ${SCRIPT_DIR}/ansible/setup-demo.yml -i ${SCRIPT_DIR}/ansible/inventory.ini 
-fi
-fi
+ansible-playbook "${SCRIPT_DIR}/ansible/setup-demo.yml" -i "${SCRIPT_DIR}/ansible/inventory.ini" "${EXTRA_VARS[@]}"
 }

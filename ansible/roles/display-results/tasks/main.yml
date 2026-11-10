@@ -14,6 +14,6 @@
       - "The web interface may be reached at:"
       - https://{{ EXTERNAL_IP.stdout }}/vnc.html?host={{ EXTERNAL_IP.stdout }}&port=443
       - "Access via ssh:"
-      - ssh {{ ansible_user }}@{{ ansible_host }} -p {{ansible_port }}
+      - ssh {{ ansible_user | default(ansible_user_id) }}@{{ ansible_host }} -p {{ ansible_port | default(22) }}
       - The username is '{{ USERNAME }}' and the password is 'redhat'
       - Enjoy!

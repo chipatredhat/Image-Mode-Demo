@@ -1,7 +1,7 @@
 # Image-Mode-Demo  
 
 
-This is a collection of ansible rolls to setup a demo of RHEL Image Mode with a pipeline from demo.redhat.com
+This is a collection of ansible roles to setup a demo of RHEL Image Mode with a pipeline from demo.redhat.com
 
 This is meant to be run as an Ansible Playbook.  To use:
 
@@ -17,7 +17,11 @@ git clone https://github.com/chipatredhat/Image-Mode-Demo.git
 ansible-galaxy collection install -r Image-Mode-Demo/ansible/requirements.yml
 ```
 
-* Populate Image-Mode-Demo/ansible/credentials.yml with your credentials (**REQUIRED** unless you are passing the values on the command line)
+* Copy Image-Mode-Demo/ansible/credentials.yml.example to Image-Mode-Demo/ansible/credentials.yml and populate it with your credentials (**REQUIRED** unless you are passing the values on the command line).  credentials.yml is ignored by git so your tokens are never committed.
+
+```text
+cp Image-Mode-Demo/ansible/credentials.yml.example Image-Mode-Demo/ansible/credentials.yml
+```
 
 * Edit the inventory file at Image-Mode-Demo/ansible/inventory.ini
 
@@ -26,14 +30,14 @@ ansible-galaxy collection install -r Image-Mode-Demo/ansible/requirements.yml
 * Run the playbook
 
 ```text
-ansible-playbook Image-Mode-Demo/ansible/setup-demo.yml -i ansible/inventory.ini
+ansible-playbook Image-Mode-Demo/ansible/setup-demo.yml -i Image-Mode-Demo/ansible/inventory.ini
 ```
 
 OR
 
 ```text
-cd ansible
-ansible-playbook Image-Mode-Demo/ansible/setup-demo.yml
+cd Image-Mode-Demo/ansible
+ansible-playbook setup-demo.yml
 ```
 
 * If you wish to prep the environment for just the workflow portion of the workshop, set the PREP_WORKFLOW environment variable to true
@@ -42,7 +46,7 @@ ansible-playbook Image-Mode-Demo/ansible/setup-demo.yml
 ansible-playbook Image-Mode-Demo/ansible/setup-demo.yml -e PREP_WORKFLOW=True
 ```
 
-* If you do NOT wish to partition a second dist (required in RHDP) set
+* If you wish to partition and mount a second disk at /var/lib/libvirt/images (required in RHDP) set
 ```text
--e PARTITION_DISK=False
+-e PARTITION_DISK=True
 ```

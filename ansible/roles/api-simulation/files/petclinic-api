@@ -1,0 +1,9 @@
+#!/bin/bash
+# Runs one of the petclinic maintenance playbooks in a detached tmux session.
+# Called (through sudo, as the lab user) by the nginx CGI scripts and PHP pages.
+case "$1" in
+  update|switch|rollback) ;;
+  *) echo "usage: $0 update|switch|rollback" >&2 ; exit 1 ;;
+esac
+cd "${HOME}/ansible" || exit 1
+tmux new-session -d -s "$1" "ansible-playbook -vvv ${HOME}/ansible/$1.yaml -i appserver, > /tmp/$1_output.txt 2>&1"
