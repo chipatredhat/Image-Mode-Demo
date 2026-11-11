@@ -86,22 +86,42 @@
   changed_when: restorecon_result.stdout | length > 0
 
 # The block closes the existing 50x location and opens a new one for cgi-bin.
-# validate makes sure a bad edit never replaces a working nginx.conf.
-- name: Add cgi directory to nginx.conf
-  ansible.builtin.blockinfile:
-    path: /etc/nginx/nginx.conf
-    insertafter: '^ .*location.*50x.html'
-    validate: /usr/sbin/nginx -t -c %s
-    block: |
-      {% filter indent(width=7, first=true) %}
-          }
+# nginx -t runs against the real file (validate: on a temp copy breaks relative includes
+# such as php.conf's "include fastcgi_params"); a bad edit is rolled back from the backup.
+- name: Add cgi directory to nginx.conf and validate it
+  block:
+    - name: Add cgi directory to nginx.conf
+      ansible.builtin.blockinfile:
+        path: /etc/nginx/nginx.conf
+        insertafter: '^ .*location.*50x.html'
+        backup: true
+        block: |
+          {% filter indent(width=7, first=true) %}
+              }
 
-          location /cgi-bin/ {
-                    root /usr/share/nginx;
-                    fastcgi_pass unix:/run/fcgiwrap/fcgiwrap-nginx.sock;
-                    include /etc/nginx/fastcgi_params;
-                    fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-       {% endfilter %}
+              location /cgi-bin/ {
+                        root /usr/share/nginx;
+                        fastcgi_pass unix:/run/fcgiwrap/fcgiwrap-nginx.sock;
+                        include /etc/nginx/fastcgi_params;
+                        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+           {% endfilter %}
+      register: nginx_conf
+
+    - name: Validate the nginx configuration
+      ansible.builtin.command: /usr/sbin/nginx -t
+      changed_when: false
+
+  rescue:
+    - name: Restore the previous nginx.conf
+      ansible.builtin.copy:
+        src: "{{ nginx_conf.backup_file }}"
+        dest: /etc/nginx/nginx.conf
+        remote_src: true
+      when: nginx_conf.backup_file is defined
+
+    - name: Stop because nginx.conf failed validation
+      ansible.builtin.fail:
+        msg: "nginx.conf failed validation after adding the cgi-bin block (previous file restored): {{ ansible_failed_result.stderr | default(ansible_failed_result.msg | default('')) }}"
 
 - name: Now restart nginx to pick up changes
   ansible.builtin.systemd_service:
