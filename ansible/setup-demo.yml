@@ -14,15 +14,16 @@
     PARTITION_DISK: False
 
   pre_tasks:
+    # Only the variable names are printed, never their values
     - name: Make sure the required credentials are set
       ansible.builtin.assert:
-        that:
-          - OFFLINE_TOKEN is defined and OFFLINE_TOKEN is not none and OFFLINE_TOKEN | string | length > 0
-          - PMUSERNAME is defined and PMUSERNAME is not none and PMUSERNAME | string | length > 0
-          - PMPASSWORD is defined and PMPASSWORD is not none and PMPASSWORD | string | length > 0
-        fail_msg: "OFFLINE_TOKEN, PMUSERNAME and PMPASSWORD must be set in credentials.yml or passed with -e"
-        quiet: true
-      no_log: true
+        that: (lookup('vars', item, default='') | default('', true) | string | length) > 0
+        fail_msg: "{{ item }} is empty. Set it in ansible/credentials.yml, or pass your credentials file with -e @/path/to/credentials.yml"
+        success_msg: "{{ item }} is set"
+      loop:
+        - OFFLINE_TOKEN
+        - PMUSERNAME
+        - PMPASSWORD
 
   roles:
     - partition-disk
